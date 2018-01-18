@@ -42,9 +42,9 @@ void InitAddress()
 	EntityType_Goods = 0x33; 
 
 
-	F1_F10_BaseAddress = 0x031AA8C8;
+	F1_F10_BaseAddress = 0x02D3670C;
 	F1_F10_BaseOffestAddress = 0x410; 
-	F1_F10_CallAddress = 0x0067E870;
+	F1_F10_CallAddress = 0x006E9020;
 }
 
 // 人物属性相关地址

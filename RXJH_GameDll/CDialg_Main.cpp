@@ -69,6 +69,9 @@ void CCDialg_Main::OnBnClickedButton()
 	// TODO: 在此添加控件通知处理程序代码
 	//UseTheGoodsCall(GetGoodsIDforName("金创药(大)"));
 	CheckEntity();
+	
+	::Sleep(200);
+	UseTheF1_F10Call_(2);
 }
 
 #define TIMERID_REFRESH			0x1000

@@ -17,6 +17,8 @@ DWORD GetEntityDengJi(DWORD dwData);
 DWORD GetEntityNotID();
 void CheckEntity();
 
+
+void UseTheF1_F10Call_(DWORD dwIndex);
 BOOL UseTheF1_F10Call(DWORD dwPostion);
 
 void FindWalk(float x,float y);

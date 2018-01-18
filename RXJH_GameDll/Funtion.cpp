@@ -72,7 +72,7 @@ DWORD GetEntityId(DWORD dwData)
 
 float GetEntityDistance(DWORD dwData)
 {
-	return Read_RF(dwData + EntityIdOffset);
+	return Read_RF(dwData + EntityDistOffset);
 }
 
 DWORD GetEntityDeath(DWORD dwData)
@@ -95,13 +95,32 @@ DWORD GetEntityNotID()
 	return Read_RD(Read_RD(EntityBaseAddress) + EntitySelOffset);
 }
 
+float Convert2Float(DWORD dwAddr)
+{
+	DWORD dwMem = *((DWORD*)dwAddr);
+	DWORD dwOri = dwMem;
+	//revert
+
+	DWORD* pMem = &dwMem;
+	float* pRet = (float*)pMem;
+	float ret = *pRet;
+	return ret;
+	/*DWORD dwVal = 0x42af147b;
+	DWORD* pdw = &dwVal;
+	float temp = 87.54;
+	float* pf = &temp;
+
+	pf = (float*)pdw;
+	temp = *pf;*/
+}
+
 void CheckEntity()
 {
 	if (0x0FFFF == GetEntityNotID())
 	{
 		DWORD dwTempNation = 0;
 		float dwDistion = 0.0f;
-		for (DWORD dwID = 0x10; dwID < 0x2710; dwID++)
+		for (DWORD dwID = 0x10; dwID < 0x2000; dwID++)
 		{
 			DWORD dwNation = Read_RD(EntityPropAddress + dwID * 4);
 			if (0x0 == dwNation)
@@ -114,9 +133,17 @@ void CheckEntity()
 				// 未死亡
 				if (0x0 == GetEntityDeath(dwNation))
 				{
-					if (dwDistion == 0.0f || dwDistion > GetEntityDistance(dwNation))
+					float dist = Convert2Float(dwNation + EntityDistOffset);
+					//float asmdist = GetEntityDistance(dwNation);
+					if (dwID < 0x1000 || dwID > 0x1600)
 					{
-						dwDistion = GetEntityDistance(dwNation);
+						char szmsg[512] = { 0 };
+						sprintf_s(szmsg, 512, "rxjh: ID=%x, dist=%f", dwID, dist);
+						::OutputDebugStringA(szmsg);
+					}
+					if (dwDistion == 0.0f || dwDistion > dist)
+					{
+						dwDistion = dist;
 						dwTempNation = dwNation;
 					}
 				}
@@ -136,13 +163,27 @@ void CheckEntity()
 				MOV EAX, [ESI + 0x0C]
 				MOV ECX, EntityBaseAddress
 				mov ecx, [ecx]
-				mov[ecx + EntitySelOffset], eax
+				mov[ecx + 0x1a3c], eax
 			}
 		}
 	}
 }
 
 //-----------------------------------------------------------------------
+void UseTheF1_F10Call_(DWORD dwIndex)
+{
+	DWORD dwNation = Read_RD(F1_F10_BaseAddress);
+	if (0x0 != dwNation)
+	{
+		_asm
+		{
+			push dwIndex
+			mov ecx, dwNation
+			mov ebx, F1_F10_CallAddress
+			call ebx
+		}
+	}
+}
 BOOL UseTheF1_F10Call(DWORD dwPostion)
 {
 	DWORD dwNation = Read_RD(Read_RD(F1_F10_BaseAddress) + dwPostion*4 + F1_F10_BaseOffestAddress);
