@@ -33,6 +33,7 @@ extern DWORD EntityDistOffset; // 距离偏移
 extern DWORD EntityLevelOffset; // 等级偏移
 extern DWORD EntityHalfOffset; // 血量偏移
 extern DWORD EntityDeadOffset; // 是否死亡偏移
+extern DWORD EntityJuemingOffset; // 是否可以施展绝命技的偏移，为1是可以
 // 怪物类型 物品：0x33，玩家：0x31, 怪物/NPC：0x2E(NPC等级为0，血量为32000)
 extern DWORD EntityType_Monster; // 野怪
 extern DWORD EntityType_NPC; // NPC

@@ -35,6 +35,7 @@ void InitAddress()
 	EntityLevelOffset = 0x5F8;
 	EntityHalfOffset = 0x5F4;
 	EntityDeadOffset = 0x3C0;
+	EntityJuemingOffset = 0x3C8;
 
 	EntityType_Monster = 0x2E;
 	EntityType_NPC = 0x2E; 
@@ -80,6 +81,7 @@ DWORD EntityDistOffset; // 距离偏移
 DWORD EntityLevelOffset; // 等级偏移
 DWORD EntityHalfOffset; // 血量偏移
 DWORD EntityDeadOffset; // 是否死亡偏移
+DWORD EntityJuemingOffset; // 是否可以施展绝命技的偏移，为1是可以
 						// 怪物类型 物品：0x33，玩家：0x31, 怪物/NPC：0x2E(NPC等级为0，血量为32000)
 DWORD EntityType_Monster; // 野怪
 DWORD EntityType_NPC; // NPC
