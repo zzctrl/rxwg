@@ -46,6 +46,9 @@ void InitAddress()
 	F1_F10_BaseAddress = 0x02D3670C;
 	F1_F10_BaseOffestAddress = 0x410; 
 	F1_F10_CallAddress = 0x006E9020;
+
+	ActionBaseAddress = 0x02D10B90;
+	ActionCallAddress = 0x006E1EF0;
 }
 
 // 人物属性相关地址
@@ -93,3 +96,7 @@ DWORD EntityType_Goods; // 物品
 DWORD F1_F10_BaseAddress;//快捷键基址
 DWORD F1_F10_BaseOffestAddress;     //快捷键基本偏移
 DWORD F1_F10_CallAddress;//快捷键call地址
+
+						 // 人物动作相关地址
+DWORD ActionBaseAddress; // 动作基址
+DWORD ActionCallAddress; // 动作call地址

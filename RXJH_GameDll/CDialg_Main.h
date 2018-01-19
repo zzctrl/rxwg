@@ -4,6 +4,7 @@
 // CCDialg_Main 对话框
 #include "Resource.h"
 #include "Funtion.h"
+#include "afxwin.h"
 
 class CCDialg_Main : public CDialog
 {
@@ -30,8 +31,15 @@ public:
 private:
 	void ReadData();
 
+	void AttackWork();
+	void ProtectWork();
+
 	int m_nHong;
 	int m_nLan;
 	int m_nX;
 	int m_nY;
+
+	bool m_bWorking;
+public:
+	CButton m_btnWork;
 };

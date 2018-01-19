@@ -10,6 +10,12 @@
 
 
 // CCDialg_Main 对话框
+// 自动回补红，蓝
+#define TIMERID_PROTECT			0x1000
+// 挂机打怪
+#define TIMERID_ATTACK			0x1001
+
+
 
 IMPLEMENT_DYNAMIC(CCDialg_Main, CDialog)
 
@@ -20,7 +26,7 @@ CCDialg_Main::CCDialg_Main(CWnd* pParent /*=NULL*/)
 	, m_nX(0)
 	, m_nY(0)
 {
-
+	m_bWorking = false;
 }
 
 CCDialg_Main::~CCDialg_Main()
@@ -34,6 +40,7 @@ void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT2, m_nLan);
 	DDX_Text(pDX, IDC_EDIT4, m_nX);
 	DDX_Text(pDX, IDC_EDIT3, m_nY);
+	DDX_Control(pDX, IDC_BUTTON, m_btnWork);
 }
 
 
@@ -67,14 +74,24 @@ void CCDialg_Main::OnDestroy()
 void CCDialg_Main::OnBnClickedButton()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	if (!m_bWorking)
+	{
+		SetTimer(TIMERID_ATTACK, 1000, NULL);
+		m_btnWork.SetWindowTextA("停止挂机");
+	}
+	else
+	{
+		KillTimer(TIMERID_ATTACK);
+		m_btnWork.SetWindowTextA("开始挂机");
+	}
+	m_bWorking = !m_bWorking;
+	//ActionCall(1);
 	//UseTheGoodsCall(GetGoodsIDforName("金创药(大)"));
-	CheckEntity();
+	//CheckEntity();
 	
-	::Sleep(200);
-	UseTheF1_F10Call_(2);
+	//::Sleep(200);
+	//UseTheF1_F10Call_(2);
 }
-
-#define TIMERID_REFRESH			0x1000
 
 BOOL CCDialg_Main::OnInitDialog()
 {
@@ -83,7 +100,7 @@ BOOL CCDialg_Main::OnInitDialog()
 	// 初始化地址数据
 	InitAddress();
 
-	SetTimer(TIMERID_REFRESH, 500, NULL);
+	SetTimer(TIMERID_PROTECT, 200, NULL);
 
 	return TRUE;
 }
@@ -91,25 +108,20 @@ BOOL CCDialg_Main::OnInitDialog()
 void CCDialg_Main::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	if (nIDEvent == TIMERID_REFRESH)
+	if (nIDEvent == TIMERID_PROTECT)
 	{
-		ReadData();
-		UpdateData(FALSE);
+		ProtectWork();
+	}
+	else if (nIDEvent == TIMERID_ATTACK)
+	{
+		AttackWork();
 	}
 
 	CDialog::OnTimer(nIDEvent);
 }
 
-static const DWORD s_addrHong = 0x02AEBCB8;
-static const DWORD s_addrLan = 0x02AEBCBC;
-static const DWORD s_addrBase = 0x02D37970;
-static const DWORD s_offsetX = 0x36C;
-static const DWORD s_offsetY = 0x370;
-
 void CCDialg_Main::ReadData()
 {
-	//m_nHong = *((int *)s_addrHong);
-	//m_nLan = *((int *)s_addrLan);
 	m_nHong = Read_RD(UserBaseAddress + UserHPOffset);
 	m_nLan = Read_RD(UserBaseAddress + UserMPOffset);
 	//DWORD dwBase = *((DWORD *)CordinateBaseAddress);
@@ -119,4 +131,52 @@ void CCDialg_Main::ReadData()
 	m_nX = Read_RD(Read_RD(CordinateBaseAddress) + CordinateXOffset);
 	m_nY = Read_RD(Read_RD(CordinateBaseAddress) + CordinateYOffset);
 	m_nY = 0 - m_nY;
+
+	UpdateData(FALSE);
+}
+
+void CCDialg_Main::AttackWork()
+{
+	DWORD dwSel = GetEntitySelID();
+	DWORD dwSelNation = 0;
+	if (ENTITY_NOTSEL_ID == dwSel)
+	{
+		dwSel = CheckEntity();
+	}
+
+	if (ENTITY_NOTSEL_ID != dwSel)
+	{
+		dwSelNation = Read_RD(EntityPropAddress + dwSel * 4);
+		DWORD dwJueming = GetEntityJueming(dwSelNation);
+		// 是否可以使用绝命技
+		if (0 != dwJueming)
+		{
+			// 需要把绝命技能放在F8上
+			UseTheF1_F10Call_(7);
+		}
+		else
+		{
+			// 普通攻击或技能
+			ActionCall();
+		}
+	}
+	//ActionCall(1);
+	//UseTheGoodsCall(GetGoodsIDforName("金创药(大)"));
+	//CheckEntity();
+	//::Sleep(200);
+	//UseTheF1_F10Call_(0);
+}
+void CCDialg_Main::ProtectWork()
+{
+	ReadData();
+	// 生命值小于设定值，加血默认按F2
+	if (m_nHong < 300)
+	{
+		UseTheF1_F10Call_(1);
+	}
+	// 蓝小于设定值，加血默认按F3
+	if (m_nLan < 100)
+	{
+		UseTheF1_F10Call_(2);
+	}
 }

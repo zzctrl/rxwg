@@ -46,6 +46,10 @@ extern DWORD F1_F10_BaseAddress;//快捷键基址
 extern DWORD F1_F10_BaseOffestAddress;     //快捷键基本偏移
 extern DWORD F1_F10_CallAddress;//快捷键call地址
 
+// 人物动作相关地址
+extern DWORD ActionBaseAddress; // 动作基址
+extern DWORD ActionCallAddress; // 动作call地址
+
 // 可以从本地配置文件中读取地址信息
 void InitAddress();
 

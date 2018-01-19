@@ -90,7 +90,12 @@ DWORD GetEntityDengJi(DWORD dwData)
 	return Read_RD(dwData + EntityLevelOffset);
 }
 
-DWORD GetEntityNotID()
+DWORD GetEntityJueming(DWORD dwData)
+{
+	return Read_RD(dwData + EntityJuemingOffset);
+}
+
+DWORD GetEntitySelID()
 {
 	return Read_RD(Read_RD(EntityBaseAddress) + EntitySelOffset);
 }
@@ -114,13 +119,14 @@ float Convert2Float(DWORD dwAddr)
 	temp = *pf;*/
 }
 
-void CheckEntity()
+DWORD CheckEntity()
 {
-	if (0x0FFFF == GetEntityNotID())
+	DWORD dwSelID = 0;
+	if (ENTITY_NOTSEL_ID == GetEntitySelID())
 	{
 		DWORD dwTempNation = 0;
 		float dwDistion = 0.0f;
-		for (DWORD dwID = 0x10; dwID < 0x2000; dwID++)
+		for (DWORD dwID = 0x10; dwID < 0x2710; dwID++)
 		{
 			DWORD dwNation = Read_RD(EntityPropAddress + dwID * 4);
 			if (0x0 == dwNation)
@@ -145,6 +151,7 @@ void CheckEntity()
 					{
 						dwDistion = dist;
 						dwTempNation = dwNation;
+						dwSelID = dwID;
 					}
 				}
 			}
@@ -167,7 +174,27 @@ void CheckEntity()
 			}
 		}
 	}
+	return dwSelID;
 }
+
+void ActionCall(DWORD dwIndex)
+{
+	DWORD dwNation = Read_RD(Read_RD(ActionBaseAddress) + dwIndex * 4 + 0x410);
+	if (0 != dwNation)
+	{
+		_asm
+		{
+			mov eax, dwNation
+			mov ecx, [eax + 0x4C]
+			mov edx, 0x010C8CB8
+			mov edx, [edx]
+			push ecx
+			mov ecx, [edx + 0x27C]
+			call ActionCallAddress
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------
 void UseTheF1_F10Call_(DWORD dwIndex)
