@@ -20,6 +20,8 @@ DWORD GetEntityJueming(DWORD dwData);
 DWORD GetEntitySelID();
 // 选怪
 DWORD CheckEntity();
+// 选npc
+void CheckNPC(DWORD dwID);
 
 
 void UseTheF1_F10Call_(DWORD dwIndex);

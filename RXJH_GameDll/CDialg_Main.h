@@ -42,4 +42,8 @@ private:
 	bool m_bWorking;
 public:
 	CButton m_btnWork;
+	CString m_szMapName;
+	DWORD m_nAttackRange;
+	DWORD m_nHongPer;
+	DWORD m_nLanPer;
 };

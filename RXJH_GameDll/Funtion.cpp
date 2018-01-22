@@ -177,6 +177,25 @@ DWORD CheckEntity()
 	return dwSelID;
 }
 
+void CheckNPC(DWORD dwID)
+{
+	DWORD dwNation = Read_RD(EntityPropAddress + dwID * 4);
+	_asm
+	{
+		MOV ESI, dwNation
+		MOV EAX, [ESI]
+		MOV EDX, [EAX + 0x4]
+		PUSH 0x1
+		PUSH 0x450
+		MOV ECX, ESI
+		CALL EDX
+		MOV EAX, [ESI + 0x0C]
+		MOV ECX, EntityBaseAddress
+		mov ecx, [ecx]
+		mov[ecx + 0x1a3c], eax
+	}
+}
+
 void ActionCall(DWORD dwIndex)
 {
 	DWORD dwNation = Read_RD(Read_RD(ActionBaseAddress) + dwIndex * 4 + 0x410);
@@ -239,9 +258,9 @@ void FindWalk(float x,float y)
 		mov [ebx],eax
 		mov eax,y
 		mov [ebx+8],eax
-		mov [ebx+0x14],0xFFFF
-		mov [ebx+0x18],1
-		mov BYTE PTR DS:[ebx+0x1C],1
+		mov [ebx+0x18],0xFFFF
+		mov [ebx+0x1C],1
+		mov BYTE PTR DS:[ebx+0x20],1
 
 		push 0x54
 		push pDate

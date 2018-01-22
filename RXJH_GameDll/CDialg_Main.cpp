@@ -25,6 +25,10 @@ CCDialg_Main::CCDialg_Main(CWnd* pParent /*=NULL*/)
 	, m_nLan(0)
 	, m_nX(0)
 	, m_nY(0)
+	, m_szMapName(_T(""))
+	, m_nAttackRange(150)
+	, m_nHongPer(50)
+	, m_nLanPer(50)
 {
 	m_bWorking = false;
 }
@@ -41,6 +45,10 @@ void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT4, m_nX);
 	DDX_Text(pDX, IDC_EDIT3, m_nY);
 	DDX_Control(pDX, IDC_BUTTON, m_btnWork);
+	DDX_Text(pDX, IDC_EDIT8, m_szMapName);
+	DDX_Text(pDX, IDC_EDIT5, m_nAttackRange);
+	DDX_Text(pDX, IDC_EDIT6, m_nHongPer);
+	DDX_Text(pDX, IDC_EDIT7, m_nLanPer);
 }
 
 
@@ -73,6 +81,8 @@ void CCDialg_Main::OnDestroy()
 
 void CCDialg_Main::OnBnClickedButton()
 {
+	CheckNPC(0x6B);
+	return;
 	// TODO: 在此添加控件通知处理程序代码
 	if (!m_bWorking)
 	{
@@ -131,6 +141,9 @@ void CCDialg_Main::ReadData()
 	m_nX = Read_RD(Read_RD(CordinateBaseAddress) + CordinateXOffset);
 	m_nY = Read_RD(Read_RD(CordinateBaseAddress) + CordinateYOffset);
 	m_nY = 0 - m_nY;
+
+	char* pMapName = Read_RS(Read_RD(MapBaseAddress) + MapNameOffset);
+	m_szMapName = pMapName;
 
 	UpdateData(FALSE);
 }

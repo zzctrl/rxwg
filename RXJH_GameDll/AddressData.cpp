@@ -12,6 +12,9 @@ void InitAddress()
 	UserMaxHPOffset = 0x8C;
 	UserMaxMPOffset = 0x90;
 
+	MapBaseAddress = 0x02D379F8;
+	MapNameOffset = 0x231;
+
 	CordinateBaseAddress = 0x02D37970;
 	CordinateXOffset = 0x36C;
 	CordinateYOffset = 0x370;
@@ -26,6 +29,8 @@ void InitAddress()
 
 	EntityBaseAddress = 0x02D36514;
 	EntitySelOffset = 0x1A3C;
+	EntityXOffset = 0x1C04;
+	EntityYOffset = 0x1C0C;
 
 	EntityPropAddress = 0x02D36518;
 	EntityTypeOffset = 0x8;
@@ -36,6 +41,8 @@ void InitAddress()
 	EntityHalfOffset = 0x5F4;
 	EntityDeadOffset = 0x3C0;
 	EntityJuemingOffset = 0x3C8;
+	EntityCordinateXOffset = 0x1060;
+	EntityCordinateYOffset = 0x1068;
 
 	EntityType_Monster = 0x2E;
 	EntityType_NPC = 0x2E; 
@@ -64,6 +71,9 @@ DWORD CordinateBaseAddress; // 坐标基址
 DWORD CordinateXOffset; // X坐标偏移
 DWORD CordinateYOffset; // Y坐标偏移
 
+DWORD MapBaseAddress; // 地图基址
+DWORD MapNameOffset; // 当前地图名称偏移
+
 						// 背包相关地址
 DWORD GoodsBaseAddress;//背包的基址
 DWORD GoodsBaseOffestAddress;     //背包基本的偏移
@@ -75,6 +85,8 @@ DWORD GoodsUseCallAddress;// 使用背包物品call，参数为物品在背包�
 						  // 选中的怪物相关地址
 DWORD EntityBaseAddress;// 选中怪物ID基址
 DWORD EntitySelOffset; // 选中怪物ID偏移值
+DWORD EntityXOffset; // x坐标偏移
+DWORD EntityYOffset; // y坐标偏移
 					   // 怪物属性相关
 DWORD EntityPropAddress;// 怪物属性基址
 DWORD EntityTypeOffset; // 类型偏移
@@ -85,6 +97,8 @@ DWORD EntityLevelOffset; // 等级偏移
 DWORD EntityHalfOffset; // 血量偏移
 DWORD EntityDeadOffset; // 是否死亡偏移
 DWORD EntityJuemingOffset; // 是否可以施展绝命技的偏移，为1是可以
+DWORD EntityCordinateXOffset; // 怪物X坐标偏移
+DWORD EntityCordinateYOffset; // 怪物Y坐标偏移
 						// 怪物类型 物品：0x33，玩家：0x31, 怪物/NPC：0x2E(NPC等级为0，血量为32000)
 DWORD EntityType_Monster; // 野怪
 DWORD EntityType_NPC; // NPC

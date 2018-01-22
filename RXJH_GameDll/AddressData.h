@@ -13,6 +13,9 @@ extern DWORD CordinateBaseAddress; // 坐标基址
 extern DWORD CordinateXOffset; // X坐标偏移
 extern DWORD CordinateYOffset; // Y坐标偏移
 
+extern DWORD MapBaseAddress; // 地图基址
+extern DWORD MapNameOffset; // 当前地图名称偏移
+
 // 背包相关地址
 extern DWORD GoodsBaseAddress;//背包的基址
 extern DWORD GoodsBaseOffestAddress;     //背包基本的偏移
@@ -24,6 +27,8 @@ extern DWORD GoodsUseCallAddress;// 使用背包物品call，参数为物品在�
 // 选中的怪物相关地址
 extern DWORD EntityBaseAddress;// 选中怪物ID基址
 extern DWORD EntitySelOffset; // 选中怪物ID偏移值
+extern DWORD EntityXOffset; // x坐标偏移
+extern DWORD EntityYOffset; // y坐标偏移
 // 怪物属性相关
 extern DWORD EntityPropAddress;// 怪物属性基址
 extern DWORD EntityTypeOffset; // 类型偏移
@@ -34,6 +39,8 @@ extern DWORD EntityLevelOffset; // 等级偏移
 extern DWORD EntityHalfOffset; // 血量偏移
 extern DWORD EntityDeadOffset; // 是否死亡偏移
 extern DWORD EntityJuemingOffset; // 是否可以施展绝命技的偏移，为1是可以
+extern DWORD EntityCordinateXOffset; // 怪物X坐标偏移
+extern DWORD EntityCordinateYOffset; // 怪物Y坐标偏移
 // 怪物类型 物品：0x33，玩家：0x31, 怪物/NPC：0x2E(NPC等级为0，血量为32000)
 extern DWORD EntityType_Monster; // 野怪
 extern DWORD EntityType_NPC; // NPC
