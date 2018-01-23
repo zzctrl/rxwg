@@ -1,0 +1,74 @@
+=====================================
+人物基本属性
+
+角色名称：0x02AEBC38  （pre:0x02F860F0）
+当前等级：+0x34  BYTE类型
+当前HP：+0x80 
+当前MP：+0x84
+最大HP；+0x8C
+最大MP: +0x90
+当前经验：+0x98
+最大经验：+0xA0
+
+=====================================
+背包基址：02D105DC
+格子：[0x02D105DC] + ebx*4 + 0x410 (对应物品基址)
+物品基址：[0x02D105DC] + ebx*4 + 0x410
+物品名称：[物品基址] + 0x5C
+物品数量：[物品基址] + 0xC44   
+
+=====================================
+// 使用背包物品的call
+#define EatGoodsAddress		0x007FDC20
+
+void EatGoods()
+{
+	// edx是物品在背包中的索引下标
+	_asm
+	{
+		mov edx, 0x1
+		push edx
+		push 0x1
+		push 0x0
+		mov ebx, EatGoodsAddress
+		call ebx
+	}
+}
+
+=======================================
+
+call:
+client.exe+ 2C334B         修改药品数量
+client.exe+ 2C6275
+client.exe+ 2C66FD
+client.exe+ 260C9D         传入背包物品索引下标
+client.exe+ 45B3C6
+
+访问药品1：
+007FFE14 - 88 95 D3D7FFFF  - mov [ebp-0000282D],dl
+007FFE1A - 8B B4 97 10040000  - mov esi,[edi+edx*4+00000410]
+007FFE21 - 8B B6 440C0000  - mov esi,[esi+00000C44] <<
+007FFE27 - 89 B5 E2D7FFFF  - mov [ebp-0000281E],esi
+007FFE2D - 33 F6  - xor esi,esi
+
+EAX=3B9ACDCB
+EBX=00000000
+ECX=00000001
+EDX=00000000
+ESI=00000076
+EDI=2A27B328
+ESP=0018B4F0
+EBP=0019A578
+EIP=007FFE27
+
+访问药品2：
+006C3345 - E9 59010000 - jmp Client.exe+2C34A3
+006C334A - 99 - cdq 
+006C334B - 89 83 440C0000  - mov [ebx+00000C44],eax <<
+006C3351 - 89 93 480C0000  - mov [ebx+00000C48],edx
+006C3357 - E9 47010000 - jmp Client.exe+2C34A3
+
+
+Client.exe+3A28EF  <====
+Client.exe+39FB30
+Client.exe+39FC9C
