@@ -173,7 +173,7 @@
       <Description>"打开NPC对话基址"</Description>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
-      <Address>02D37C7C</Address>
+      <Address>02D37C8C</Address>
       <Offsets>
         <Offset>338</Offset>
       </Offsets>
@@ -182,7 +182,7 @@
       <ID>31</ID>
       <Description>"是否打开NPC对话"</Description>
       <VariableType>4 Bytes</VariableType>
-      <Address>2AB7F4A8+40</Address>
+      <Address>3b6a9c48+40</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>32</ID>
@@ -196,23 +196,24 @@
       <Description>"无描述"</Description>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
-      <Address>00E55BA8</Address>
+      <Address>3c1289a8</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>34</ID>
       <Description>"无描述"</Description>
       <ShowAsHex>1</ShowAsHex>
-      <VariableType>Array of byte</VariableType>
-      <ByteLength>26</ByteLength>
-      <Address>08CDF56C</Address>
+      <VariableType>4 Bytes</VariableType>
+      <Address>3af24e80+40</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>35</ID>
       <Description>"无描述"</Description>
       <ShowAsHex>1</ShowAsHex>
-      <VariableType>Array of byte</VariableType>
-      <ByteLength>26</ByteLength>
-      <Address>1865EB90</Address>
+      <VariableType>4 Bytes</VariableType>
+      <Address>02d37ca4</Address>
+      <Offsets>
+        <Offset>0</Offset>
+      </Offsets>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>

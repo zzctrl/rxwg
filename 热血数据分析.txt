@@ -68,6 +68,16 @@ EIP=007FFE27
 006C3351 - 89 93 480C0000  - mov [ebx+00000C48],edx
 006C3357 - E9 47010000 - jmp Client.exe+2C34A3
 
+打开npc对话：
+Client.exe+1206F0 - mov ecx,[esi+18]
+Client.exe+1206F3 - mov ecx,[ecx*4+Client.exe+2936518]
+Client.exe+1206FA - mov edx,[ecx]
+Client.exe+1206FC - mov eax,[edx+04]
+Client.exe+1206FF - push 00 { 0 }
+Client.exe+120701 - push 00 { 0 }
+Client.exe+120703 - push 00000401 { 1025 }
+Client.exe+120708 - call eax
+
 
 Client.exe+3A28EF  <====
 Client.exe+39FB30
