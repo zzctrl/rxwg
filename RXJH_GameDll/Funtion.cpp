@@ -196,6 +196,21 @@ void CheckNPC(DWORD dwID)
 	}
 }
 
+void OpenNPCTalk(DWORD dwID)
+{
+	DWORD dwNation = Read_RD(EntityPropAddress + dwID * 4);
+	_asm
+	{
+		mov ecx, dwNation
+		mov edx, [ecx]
+		mov eax, [edx + 4]
+		push 0
+		push 0
+		push 0x401
+		call eax
+	}
+}
+
 void ActionCall(DWORD dwIndex)
 {
 	DWORD dwNation = Read_RD(Read_RD(ActionBaseAddress) + dwIndex * 4 + 0x410);

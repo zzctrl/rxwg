@@ -81,7 +81,8 @@ void CCDialg_Main::OnDestroy()
 
 void CCDialg_Main::OnBnClickedButton()
 {
-	CheckNPC(0x6B);
+	CheckNPC(0x15a3);
+	OpenNPCTalk(0x15a3);
 	return;
 	// TODO: 在此添加控件通知处理程序代码
 	if (!m_bWorking)
@@ -97,6 +98,11 @@ void CCDialg_Main::OnBnClickedButton()
 	m_bWorking = !m_bWorking;
 	//ActionCall(1);
 	//UseTheGoodsCall(GetGoodsIDforName("金创药(大)"));
+
+	//float x = 2240.0;
+	//float y = -420.0;
+	//FindWalk(x, y);
+
 	//CheckEntity();
 	
 	//::Sleep(200);

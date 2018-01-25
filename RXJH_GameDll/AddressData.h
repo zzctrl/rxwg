@@ -47,6 +47,9 @@ extern DWORD EntityType_NPC; // NPC
 extern DWORD EntityType_Player; // 其他玩家
 extern DWORD EntityType_Goods; // 物品
 
+// 选中物品时，名称偏移
+extern DWORD EntityGoodsNameOffset; // 物品名称偏移
+
 
 // 快捷键相关地址
 extern DWORD F1_F10_BaseAddress;//快捷键基址

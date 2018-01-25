@@ -68,6 +68,30 @@ EIP=007FFE27
 006C3351 - 89 93 480C0000  - mov [ebx+00000C48],edx
 006C3357 - E9 47010000 - jmp Client.exe+2C34A3
 
+=========================================
+选怪：
+Client.exe+1284A7 - mov eax,[esi]
+Client.exe+1284A9 - mov edx,[eax+04]
+Client.exe+1284AC - push 01 { 1 }
+Client.exe+1284AE - push 00000450 { 1104 }
+Client.exe+1284B3 - mov ecx,esi
+Client.exe+1284B5 - call edx
+Client.exe+1284B7 - mov eax,[esi+0C]
+Client.exe+1284BA - mov ecx,[Client.exe+2936514] { [26EA5490] }
+Client.exe+1284C0 - mov [ecx+00001A3C],eax
+
+MOV ESI, 0x36995688
+MOV EAX, [ESI]
+MOV EDX, [EAX + 0x4]
+PUSH 0x1
+PUSH 0x450
+MOV ECX, ESI
+CALL EDX
+MOV EAX, [ESI + 0x0C]
+MOV ECX, 0x02d36514
+mov ecx, [ecx]
+mov[ecx + 0x1a3c], eax
+=========================================
 打开npc对话：
 Client.exe+1206F0 - mov ecx,[esi+18]
 Client.exe+1206F3 - mov ecx,[ecx*4+Client.exe+2936518]
@@ -82,3 +106,57 @@ Client.exe+120708 - call eax
 Client.exe+3A28EF  <====
 Client.exe+39FB30
 Client.exe+39FC9C
+
+mov ecx, 0x36959f10
+mov edx, [ecx]
+mov eax, [edx+4]
+push 0
+push 0
+push 0x401
+call eax
+
+=====================
+OPEN买卖 esi:2128F568 2128F970   CLOSE买卖 esi:21293DF8  closetalk esi:2128F160
+     eax:3E9	  5B               eax:5B                          eax:5A
+打开NPC买卖对话框：
+Client.exe+3C2BE7 - MOV EAX,DWORD PTR DS:[ESI+0x254]
+Client.exe+3C2BED - MOV EDX,DWORD PTR DS:[ECX]
+Client.exe+3C2BEF - MOV EDX,DWORD PTR DS:[EDX+4]
+Client.exe+3C2BF2 - push 00 
+Client.exe+3C2BF4 - push eax
+Client.exe+3C2BF5 - push 000003F4 
+Client.exe+3C2BFA - call edx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

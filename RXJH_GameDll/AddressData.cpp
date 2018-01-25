@@ -49,6 +49,8 @@ void InitAddress()
 	EntityType_Player = 0x31;
 	EntityType_Goods = 0x33; 
 
+	EntityGoodsNameOffset = 0x94;
+
 
 	F1_F10_BaseAddress = 0x02D3670C;
 	F1_F10_BaseOffestAddress = 0x410; 
@@ -104,6 +106,7 @@ DWORD EntityType_Monster; // 野怪
 DWORD EntityType_NPC; // NPC
 DWORD EntityType_Player; // 其他玩家
 DWORD EntityType_Goods; // 物品
+DWORD EntityGoodsNameOffset; // 物品名称偏移
 
 
 						// 快捷键相关地址

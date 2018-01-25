@@ -23,6 +23,8 @@ DWORD CheckEntity();
 // 选npc
 void CheckNPC(DWORD dwID);
 
+void OpenNPCTalk(DWORD dwID);
+
 
 void UseTheF1_F10Call_(DWORD dwIndex);
 BOOL UseTheF1_F10Call(DWORD dwPostion);
