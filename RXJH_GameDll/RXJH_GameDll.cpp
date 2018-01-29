@@ -88,6 +88,10 @@ LRESULT CALLBACK KeyboardProc(int code,
 void SetDllHookClient()
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	// test
+	//pThread = AfxBeginThread(RUNTIME_CLASS(CutThreadApp));
+	//return;
+	// endtest
 	HWND hwnd = ::FindWindow(nullptr,"YB_OnlineClient");
 	if (nullptr == hwnd)
 	{

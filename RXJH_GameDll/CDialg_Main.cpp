@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "CommonRead.h"
 #include "AddressData.h"
+#include "EntityPlayer.h"
 
 
 // CCDialg_Main 对话框
@@ -29,6 +30,7 @@ CCDialg_Main::CCDialg_Main(CWnd* pParent /*=NULL*/)
 	, m_nAttackRange(150)
 	, m_nHongPer(50)
 	, m_nLanPer(50)
+	, m_bNearest(TRUE)
 {
 	m_bWorking = false;
 }
@@ -49,6 +51,10 @@ void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT5, m_nAttackRange);
 	DDX_Text(pDX, IDC_EDIT6, m_nHongPer);
 	DDX_Text(pDX, IDC_EDIT7, m_nLanPer);
+	DDX_Check(pDX, IDC_CHECK1, m_bNearest);
+	DDX_Control(pDX, IDC_COMBO1, m_attackType);
+	DDX_Control(pDX, IDC_COMBO2, m_HPList);
+	DDX_Control(pDX, IDC_COMBO3, m_MPList);
 }
 
 
@@ -57,6 +63,9 @@ BEGIN_MESSAGE_MAP(CCDialg_Main, CDialog)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON, &CCDialg_Main::OnBnClickedButton)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON2, &CCDialg_Main::OnGetCurrentPoint)
+	ON_BN_CLICKED(IDC_BUTTON3, &CCDialg_Main::OnApplyConfig)
+	ON_CBN_DROPDOWN(IDC_COMBO2, &CCDialg_Main::OnCbnDropdownHPList)
 END_MESSAGE_MAP()
 
 
@@ -78,20 +87,63 @@ void CCDialg_Main::OnDestroy()
 	// TODO: 在此处添加消息处理程序代码
 }
 
+void buyfun()
+{
+	BYTE* pDate = new BYTE[142];
+	memset(pDate, 0, 142);
+	//BYTE data[142] = { 00, 00, 0x92, 00, 0x88, 00, 01, 00, 00, 00, 0x50, 0xE4, 0xB9, 0x28, 0x66, 0xCA, 0x9A, 0x3B, 00, 00, 00, 00, 01};
+	_asm
+	{
+		mov eax, pDate
+		mov dword ptr[eax + 2], 0x00880092
+		mov dword ptr[eax + 6], 0x1
+		mov dword ptr[eax + 0x0A], 0x28B9E450
+		mov dword ptr[eax + 0x0E], 0x3B9ACA65
+		mov dword ptr[eax + 0x12], 0
+		mov dword ptr[eax + 0x16], 0x1
+		mov ecx, dword ptr ds : [0x1097760]
+		push 0x8E
+		push eax
+		mov edx, 0x004E0220
+		call edx
+	}
+	delete pDate;
+	pDate = nullptr;
+	/*_asm
+	{
+		sub esp, 0x8E
+		mov eax, esp
+		mov dword ptr[eax + 2], 0x00880092
+		mov dword ptr[eax + 6], 0x1
+		mov dword ptr[eax + 0x0A], 0x28B9E450
+		mov dword ptr[eax + 0x0E], 0x3B9ACA65
+		mov dword ptr[eax + 0x12], 0
+		mov dword ptr[eax + 0x16], 0x1
+		mov ecx, dword ptr ds : [0x1097760]
+		push 0x8E
+		push eax
+		mov edx, 0x004E0220
+		call edx
+		add esp, 0x8E
+	}*/
+}
 
 void CCDialg_Main::OnBnClickedButton()
 {
-	CheckNPC(0x15a3);
-	OpenNPCTalk(0x15a3);
-	return;
+	//buyfun();
+	//CheckNPC(0x15a3);
+	//OpenNPCTalk(0x15a3);
+	//return;
 	// TODO: 在此添加控件通知处理程序代码
 	if (!m_bWorking)
 	{
-		SetTimer(TIMERID_ATTACK, 1000, NULL);
+		m_playHelper.Start();
+		SetTimer(TIMERID_ATTACK, 800, NULL);
 		m_btnWork.SetWindowTextA("停止挂机");
 	}
 	else
 	{
+		m_playHelper.Stop();
 		KillTimer(TIMERID_ATTACK);
 		m_btnWork.SetWindowTextA("开始挂机");
 	}
@@ -117,6 +169,28 @@ BOOL CCDialg_Main::OnInitDialog()
 	InitAddress();
 
 	SetTimer(TIMERID_PROTECT, 200, NULL);
+	
+	// 初始控件数据
+	CString szShrotCut[10] = {" F1", " F2", " F3", " F4", " F5", " F6", " F7", " F8", " F9", " F10" };
+	m_attackType.AddString("平砍");
+	for (int i = 0; i < 10; i++)
+	{
+		m_attackType.AddString(szShrotCut[i]);
+	}
+	m_attackType.SetCurSel(0);
+
+	m_HPList.AddString("金创药(小)");
+	m_HPList.AddString("金创药(中)");
+	m_HPList.AddString("金创药(大)");
+	m_HPList.AddString("金创药(特)");
+	m_HPList.AddString("秘制金创药");
+	m_HPList.SetCurSel(4);
+
+	m_MPList.AddString("人参");
+	m_MPList.AddString("野山参");
+	m_MPList.AddString("雪原参");
+	m_MPList.AddString("秘制雪原参");
+	m_MPList.SetCurSel(3);
 
 	return TRUE;
 }
@@ -126,11 +200,19 @@ void CCDialg_Main::OnTimer(UINT_PTR nIDEvent)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if (nIDEvent == TIMERID_PROTECT)
 	{
-		ProtectWork();
+		UpdateData();
+
+		m_playHelper.Protect();
+		CString szMapName = m_playHelper.GetCurMap();
+		if (szMapName != m_szMapName)
+		{
+			m_szMapName = szMapName;
+			UpdateData(FALSE);
+		}
 	}
 	else if (nIDEvent == TIMERID_ATTACK)
 	{
-		AttackWork();
+		m_playHelper.Work();
 	}
 
 	CDialog::OnTimer(nIDEvent);
@@ -198,4 +280,48 @@ void CCDialg_Main::ProtectWork()
 	{
 		UseTheF1_F10Call_(2);
 	}
+}
+
+void CCDialg_Main::OnGetCurrentPoint()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	POINT pt = m_playHelper.GetCurPoint();
+	m_playHelper.SetWorkPoint(pt);
+
+	m_nX = pt.x;
+	m_nY = pt.y;
+	
+	UpdateData(FALSE);
+}
+
+
+void CCDialg_Main::OnApplyConfig()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	UpdateData();
+	POINT pt = { m_nX, m_nY };
+	m_playHelper.SetWorkPoint(pt);
+	m_playHelper.SetWorkRange(m_nAttackRange);
+	m_playHelper.SetNearestPrior(m_bNearest);
+
+	m_playHelper.SetProtectHPPercent(m_nHongPer);
+	m_playHelper.SetProtectMPPercent(m_nLanPer);
+
+	int sel = m_attackType.GetCurSel();
+	m_playHelper.SetAttackIndex(sel);
+
+	CString szName;
+	m_HPList.GetWindowTextA(szName);
+	m_playHelper.SetPriorHPDrug(szName);
+
+	m_MPList.GetWindowTextA(szName);
+	m_playHelper.SetPriorMPDrug(szName);
+
+}
+
+
+void CCDialg_Main::OnCbnDropdownHPList()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//m_HPList.AddString("test");
 }

@@ -20,14 +20,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
@@ -105,22 +105,38 @@
     <ClCompile Include="AddressData.cpp" />
     <ClCompile Include="CDialg_Main.cpp" />
     <ClCompile Include="CutThreadApp.cpp" />
+    <ClCompile Include="EntifyMonster.cpp" />
+    <ClCompile Include="EntityBase.cpp" />
+    <ClCompile Include="EntityGoods.cpp" />
+    <ClCompile Include="EntityNPC.cpp" />
+    <ClCompile Include="EntityPlayer.cpp" />
     <ClCompile Include="Funtion.cpp" />
+    <ClCompile Include="Package.cpp" />
+    <ClCompile Include="PlayHelper.cpp" />
     <ClCompile Include="RXJH_GameDll.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Supply.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddressData.h" />
     <ClInclude Include="CDialg_Main.h" />
     <ClInclude Include="CutThreadApp.h" />
     <ClInclude Include="CommonRead.h" />
+    <ClInclude Include="EntifyMonster.h" />
+    <ClInclude Include="EntityBase.h" />
+    <ClInclude Include="EntityGoods.h" />
+    <ClInclude Include="EntityNPC.h" />
+    <ClInclude Include="EntityPlayer.h" />
     <ClInclude Include="Funtion.h" />
+    <ClInclude Include="Package.h" />
+    <ClInclude Include="PlayHelper.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RXJH_GameDll.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Supply.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>

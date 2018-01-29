@@ -5,6 +5,7 @@
 #include "Resource.h"
 #include "Funtion.h"
 #include "afxwin.h"
+#include "PlayHelper.h"
 
 class CCDialg_Main : public CDialog
 {
@@ -40,10 +41,20 @@ private:
 	int m_nY;
 
 	bool m_bWorking;
+
+	PlayHelper m_playHelper;
 public:
 	CButton m_btnWork;
 	CString m_szMapName;
 	DWORD m_nAttackRange;
 	DWORD m_nHongPer;
 	DWORD m_nLanPer;
+	BOOL m_bNearest;
+	CComboBox m_attackType;
+	CComboBox m_HPList;
+	CComboBox m_MPList;
+	
+	afx_msg void OnGetCurrentPoint();
+	afx_msg void OnApplyConfig();
+	afx_msg void OnCbnDropdownHPList();
 };

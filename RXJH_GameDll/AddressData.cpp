@@ -40,7 +40,7 @@ void InitAddress()
 	EntityLevelOffset = 0x5F8;
 	EntityHalfOffset = 0x5F4;
 	EntityDeadOffset = 0x3C0;
-	EntityJuemingOffset = 0x3C8;
+	EntityKillOffset = 0x3C8;
 	EntityCordinateXOffset = 0x1060;
 	EntityCordinateYOffset = 0x1068;
 
@@ -98,7 +98,7 @@ DWORD EntityDistOffset; // 距离偏移
 DWORD EntityLevelOffset; // 等级偏移
 DWORD EntityHalfOffset; // 血量偏移
 DWORD EntityDeadOffset; // 是否死亡偏移
-DWORD EntityJuemingOffset; // 是否可以施展绝命技的偏移，为1是可以
+DWORD EntityKillOffset; // 是否可以施展绝命技的偏移，为1是可以
 DWORD EntityCordinateXOffset; // 怪物X坐标偏移
 DWORD EntityCordinateYOffset; // 怪物Y坐标偏移
 						// 怪物类型 物品：0x33，玩家：0x31, 怪物/NPC：0x2E(NPC等级为0，血量为32000)

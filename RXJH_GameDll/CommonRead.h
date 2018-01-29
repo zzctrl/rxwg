@@ -31,9 +31,16 @@ inline char* Read_RS(DWORD dwData)
 
 inline float Read_RF(DWORD dwData)
 {
-	_asm
+	DWORD dwMem = *((DWORD*)dwData);
+	//revert
+	DWORD* pMem = &dwMem;
+	float* pRet = (float*)pMem;
+	float ret = *pRet;
+	return ret;
+
+	/*_asm
 	{
 		mov ebx,dwData
 		FLD [ebx]
-	}
+	}*/
 }

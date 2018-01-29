@@ -67,9 +67,42 @@ EIP=007FFE27
 006C334B - 89 83 440C0000  - mov [ebx+00000C44],eax <<
 006C3351 - 89 93 480C0000  - mov [ebx+00000C48],edx
 006C3357 - E9 47010000 - jmp Client.exe+2C34A3
+===================================================
+=================================================
+//人物动作call，EBX是动作的索引
+Client.exe+418EC5 - 8B 84 9F 10040000     - mov eax,[edi+ebx*4+00000410]
+//asm
+mov eax, [edi + ebx * 4 + 00000410]
+test eax, eax
+je Client.exe + 418EE5
+mov ecx, [eax + 4C]
+mov edx, [Client.exe + CC8CB8]
+push ecx
+mov ecx, [edx + 0000027C]
+call Client.exe + 2E1EF0
+
+=====================================
+怪物基址可能值：02D3BBE0  00153B98  00154364
+[02D3BBE0] = 391466E8
+[00153B98] = 391466E0
+怪物Hp: 391466E0 + 0x5FC  或者  391466E8 + 0x5F4  = 39146CDC
+
+
+client.exe: 0x400000
+怪物ID：[02D36514] + 0x1A3C (ID应该是小于0x2710)
+怪物属性：[02D36518 + ID * 4]
+怪物类型：属性 + 0x8     物品：0x33，玩家：0x31, 怪物/NPC：0x2E(NPC等级为0，血量为32000)
+怪物ID：属性 + 0xC
+距离：属性 + 0x35C
+名称：属性 + 0x360
+复活时间：属性 + 0x3BC
+是否死亡：属性 + 0x3C0
+血量：属性 + 0x5F4
+等级：属性 + 0x5F8
+绝命技能：属性 + 0x3C8
 
 =========================================
-选怪：
+选怪或者NPC的call：
 Client.exe+1284A7 - mov eax,[esi]
 Client.exe+1284A9 - mov edx,[eax+04]
 Client.exe+1284AC - push 01 { 1 }
@@ -79,6 +112,40 @@ Client.exe+1284B5 - call edx
 Client.exe+1284B7 - mov eax,[esi+0C]
 Client.exe+1284BA - mov ecx,[Client.exe+2936514] { [26EA5490] }
 Client.exe+1284C0 - mov [ecx+00001A3C],eax
+
+选中自己时（如果之前有选中，则先取消原来的，再选中自己，自己的ID的地址：[[02d36514]+c]）：
+选中玩家和自己用下面的call(52CB2E)，取消野怪选中时，也用下面的call。
+0052CAFA - mov ecx,[eax*4+02D36518]
+0052CB01 - test ecx,ecx
+0052CB03 - je 0052CB15
+0052CB05 - mov edx,[ecx]
+0052CB07 - mov eax,[edx+04]
+0052CB0A - push 00 { 0 }
+0052CB0C - push 00 { 0 }
+0052CB0E - push 00000450 { 1104 }
+0052CB13 - call eax
+0052CB15 - mov ecx,[esi+0C]
+0052CB18 - push 00 { 0 }
+0052CB1A - mov [edi+00001A3C],ecx
+0052CB20 - mov edx,[esi]
+0052CB22 - mov eax,[edx+04]
+0052CB25 - push 01 { 1 }
+0052CB27 - push 00000450 { 1104 }
+0052CB2C - mov ecx,esi
+0052CB2E - call eax
+
+所有的取消选中都是这个call:
+0052CAFA - mov ecx,[eax*4+02D36518]
+0052CB01 - test ecx,ecx
+0052CB03 - je 0052CB15
+0052CB05 - mov edx,[ecx]
+0052CB07 - mov eax,[edx+04]
+0052CB0A - push 00 { 0 }
+0052CB0C - push 00 { 0 }
+0052CB0E - push 00000450 { 1104 }
+0052CB13 - call eax
+
+
 
 MOV ESI, 0x36995688
 MOV EAX, [ESI]
@@ -119,16 +186,55 @@ call eax
 OPEN买卖 esi:2128F568 2128F970   CLOSE买卖 esi:21293DF8  closetalk esi:2128F160
      eax:3E9	  5B               eax:5B                          eax:5A
 打开NPC买卖对话框：
-Client.exe+3C2BE7 - MOV EAX,DWORD PTR DS:[ESI+0x254]
-Client.exe+3C2BED - MOV EDX,DWORD PTR DS:[ECX]
-Client.exe+3C2BEF - MOV EDX,DWORD PTR DS:[EDX+4]
-Client.exe+3C2BF2 - push 00 
-Client.exe+3C2BF4 - push eax
-Client.exe+3C2BF5 - push 000003F4 
-Client.exe+3C2BFA - call edx
+ecx: 0x24DDE440=[28C69260+04]
+               =[[0FB7D8E8+04]+04]
+	       =[[[0109CF54] + 04] + 04]
+004DFE0B - pop ebp
+0109BEF8 + EAX*4 + 4
+
+007A337B    8B8D D4D7FFFF   MOV ECX,DWORD PTR SS:[EBP-0x282C]
+007A3381    8B9C99 A0010000 MOV EBX,DWORD PTR DS:[ECX+EBX*4+0x1A0]
+007A3388    81FB F3000000   CMP EBX,0xF3
+007A338E  ^ 0F8D 10FFFFFF   JGE Client.007A32A4
+007A3394    53              PUSH EBX
+007A3395    E8 269BFFFF     CALL Client.0079CEC0
+
+004DFB86 - B9 F8BE0901           - mov ecx,0109BEF8 { [00A7482C] }
+004DFB8B - E8 60020000           - call 004DFDF0
+
+=================================================================
+打开/关闭商店，结束对话：
+007C2BE0 - 8B 4E 04              - mov ecx,[esi+04]
+007C2BE7 - 8B 86 54020000        - mov eax,[esi+00000254]
+007C2BED - 8B 11                 - mov edx,[ecx]
+007C2BEF - 8B 52 04              - mov edx,[edx+04]
+007C2BF2 - 6A 00                 - push 00 { 0 }
+007C2BF4 - 50                    - push eax
+007C2BF5 - 68 F4030000           - push 000003F4 { 1012 }
+007C2BFA - FF D2                 - call edx
+
+打开商店基址：
+esi:[[0109CF5C]+4]
+
+关闭商店基址：
+esi:[[0109CFB8]+4]
+
+结束对话基址：
+ESI=[[0109CF50]+4]
 
 
-
+mov eax, 0x109BEF8
+mov ebx, 0x42F
+mov eax, [eax+4*ebx+4]
+mov esi, [eax]
+mov ecx,[esi+04]
+mov eax,[esi+00000254]
+mov edx,[ecx]
+mov edx,[edx+04]
+push 0
+push eax
+push 0x3F4
+call edx
 
 
 

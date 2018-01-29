@@ -92,7 +92,7 @@ DWORD GetEntityDengJi(DWORD dwData)
 
 DWORD GetEntityJueming(DWORD dwData)
 {
-	return Read_RD(dwData + EntityJuemingOffset);
+	return Read_RD(dwData + EntityKillOffset);
 }
 
 DWORD GetEntitySelID()

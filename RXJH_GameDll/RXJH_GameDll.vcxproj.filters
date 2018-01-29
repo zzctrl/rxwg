@@ -13,8 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="my">
+    <Filter Include="rxfun">
       <UniqueIdentifier>{8e8ba93c-8cfc-463f-a60a-2be8a7795907}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{cee41de6-b0f8-4bb5-b366-257d57fcfaef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,10 +37,34 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Funtion.cpp">
-      <Filter>my</Filter>
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="EntifyMonster.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityBase.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityGoods.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityNPC.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityPlayer.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayHelper.cpp">
+      <Filter>rxfun</Filter>
     </ClCompile>
     <ClCompile Include="AddressData.cpp">
-      <Filter>源文件</Filter>
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="Supply.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="Package.cpp">
+      <Filter>rxfun</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,13 +87,37 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Funtion.h">
-      <Filter>my</Filter>
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityBase.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="EntifyMonster.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityGoods.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityNPC.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityPlayer.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayHelper.h">
+      <Filter>rxfun</Filter>
     </ClInclude>
     <ClInclude Include="AddressData.h">
-      <Filter>头文件</Filter>
+      <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="CommonRead.h">
-      <Filter>my</Filter>
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="Package.h">
+      <Filter>rxfun</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
