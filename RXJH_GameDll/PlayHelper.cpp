@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "PlayHelper.h"
 #include "EntifyMonster.h"
+#include "Config.h"
 
 
 PlayHelper::PlayHelper()
@@ -22,6 +23,9 @@ PlayHelper::~PlayHelper()
 // 开始/停止挂机
 void PlayHelper::Start()
 {
+	Config& cfg = Config::GetConfig();
+	m_workPt = cfg.pt;
+	m_workRange = cfg.nAttackRange;
 	// 初始化挂机范围
 	m_rcRange.left = m_workPt.x - m_workRange;
 	m_rcRange.right = m_workPt.x + m_workRange;
@@ -70,6 +74,8 @@ void PlayHelper::Work()
 			}
 			else
 			{
+				Config& cfg = Config::GetConfig();
+				m_attackIndex = cfg.nAttackType;
 				// 普攻或技能
 				if (0 == m_attackIndex)
 				{
@@ -85,22 +91,24 @@ void PlayHelper::Work()
 	}
 	else
 	{
+		Config& cfg = Config::GetConfig();
 		// 没有野怪，则返回挂机点
-		m_role.WalkTo(m_workPt);
+		m_role.WalkTo(cfg.pt);
 	}
 }
 // 保护功能，自动加血/蓝
 void PlayHelper::Protect()
 {
+	Config& cfg = Config::GetConfig();
 	DWORD dwCurrentHP= m_role.GetCurrentHP();
-	if (dwCurrentHP <= m_protectHP)
+	if (dwCurrentHP <= cfg.nProtectHP)
 	{
 		// 吃红药
 		m_role.UseShortcutF1_F10(EntityRole::FC_F2);
 	}
 
 	DWORD dwCurrentMP = m_role.GetCurrentMP();
-	if (dwCurrentMP <= m_protectMP)
+	if (dwCurrentMP <= cfg.nProtentMP)
 	{
 		// 吃蓝药
 		m_role.UseShortcutF1_F10(EntityRole::FC_F3);
@@ -193,6 +201,8 @@ DWORD PlayHelper::CheckMonster()
 	DWORD dwSelID = EntityBase::ID_NULL;
 	float dwDistion = 0.0f;
 	EntifyMonster monster;
+	Config& cfg = Config::GetConfig();
+	m_bNearest = cfg.bNearestPrior;
 	for (DWORD dwID = m_minMonsterID; dwID <= m_maxMonsterID; dwID++)
 	{
 		// 类型为野怪

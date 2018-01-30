@@ -8,6 +8,8 @@
 #include "CommonRead.h"
 #include "AddressData.h"
 #include "EntityPlayer.h"
+#include "Config.h"
+#include "BuyCountDlg.h"
 
 
 // CCDialg_Main 对话框
@@ -38,6 +40,7 @@ CCDialg_Main::CCDialg_Main(CWnd* pParent /*=NULL*/)
 	, m_nHPCounts(3)
 	, m_nMPCounts(3)
 	, m_nArrowCounts(3)
+	, m_nBuyCount(100)
 {
 	m_bWorking = false;
 }
@@ -69,6 +72,9 @@ void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT8, m_nHPCounts);
 	DDX_Text(pDX, IDC_EDIT9, m_nMPCounts);
 	DDX_Text(pDX, IDC_EDIT10, m_nArrowCounts);
+	DDX_Control(pDX, IDC_COMBO6, m_comboBuyList);
+	DDX_Text(pDX, IDC_EDIT11, m_nBuyCount);
+	DDX_Control(pDX, IDC_LIST1, m_listBuys);
 }
 
 
@@ -81,6 +87,10 @@ BEGIN_MESSAGE_MAP(CCDialg_Main, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON3, &CCDialg_Main::OnApplyConfig)
 	ON_CBN_DROPDOWN(IDC_COMBO2, &CCDialg_Main::OnCbnDropdownHPList)
 	ON_BN_CLICKED(IDC_BUTTON4, &CCDialg_Main::OnLoadConfig)
+	ON_BN_CLICKED(IDC_BUTTON5, &CCDialg_Main::OnAddBuyGoods)
+	ON_COMMAND(ID_MODIFY, &CCDialg_Main::OnModifyBuyItem)
+	ON_COMMAND(ID_DELETE, &CCDialg_Main::OnDeleteBuyItem)
+	ON_LBN_DBLCLK(IDC_LIST1, &CCDialg_Main::OnDblclkListBuy)
 END_MESSAGE_MAP()
 
 
@@ -183,7 +193,7 @@ BOOL CCDialg_Main::OnInitDialog()
 	// 初始化地址数据
 	InitAddress();
 
-	SetTimer(TIMERID_PROTECT, 200, NULL);
+	//SetTimer(TIMERID_PROTECT, 200, NULL);
 	
 	// 初始控件数据
 	CString szShrotCut[10] = {" F1", " F2", " F3", " F4", " F5", " F6", " F7", " F8", " F9", " F10" };
@@ -194,18 +204,29 @@ BOOL CCDialg_Main::OnInitDialog()
 	}
 	m_attackType.SetCurSel(0);
 
-	m_HPList.AddString("金创药(小)");
-	m_HPList.AddString("金创药(中)");
-	m_HPList.AddString("金创药(大)");
-	m_HPList.AddString("金创药(特)");
-	m_HPList.AddString("秘制金创药");
-	m_HPList.SetCurSel(4);
+	Config& cfg = Config::GetConfig();
+	for (auto& item : cfg.hpDrugs)
+	{
+		m_HPList.AddString(item);
+		m_comboBuyList.AddString(item);
+	}
+	m_HPList.SetCurSel(5);
 
-	m_MPList.AddString("人参");
-	m_MPList.AddString("野山参");
-	m_MPList.AddString("雪原参");
-	m_MPList.AddString("秘制雪原参");
+	for (auto& item : cfg.mpDrugs)
+	{
+		m_MPList.AddString(item);
+		m_comboBuyList.AddString(item);
+	}
 	m_MPList.SetCurSel(3);
+	m_comboBuyList.SetCurSel(0);
+
+	for (auto& item : cfg.maps)
+	{
+		m_comboMap.AddString(item.szName);
+		m_comboSupply.AddString(item.szName);
+	}
+	m_comboMap.SetCurSel(0);
+	m_comboSupply.SetCurSel(0);
 
 	return TRUE;
 }
@@ -332,6 +353,27 @@ void CCDialg_Main::OnApplyConfig()
 	m_MPList.GetWindowTextA(szName);
 	m_playHelper.SetPriorMPDrug(szName);
 
+	Config& cfg = Config::GetConfig();
+	// 挂机设置
+	cfg.pt = pt;
+	m_comboMap.GetWindowTextA(cfg.szWorkMap);
+	cfg.nAttackType = sel;
+	cfg.nAttackRange = m_nAttackRange;
+	cfg.bNearestPrior = m_bNearest;
+	// 保护设置
+	cfg.nProtectHP = m_nProtectHP;
+	cfg.nProtentMP = m_nProtectMP;
+	m_HPList.GetWindowTextA(cfg.szPriorHPDrug);
+	m_MPList.GetWindowTextA(cfg.szPriorMPDrug);
+	// 回城设置
+	cfg.bCheckHPDrugs = m_bHPCounts;
+	cfg.nMinHPDrugs = m_nHPCounts;
+	cfg.bCheckMPDrugs = m_bMPCounts;
+	cfg.nMinMPDrugs = m_nMPCounts;
+	cfg.bCheckArrows = m_bArrows;
+	cfg.nMinArrows = m_nArrowCounts;
+	cfg.bCheckPackage = m_bPackageFull;
+	m_comboSupply.GetWindowTextA(cfg.szSupplyMap);
 }
 
 
@@ -345,4 +387,84 @@ void CCDialg_Main::OnCbnDropdownHPList()
 void CCDialg_Main::OnLoadConfig()
 {
 	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CCDialg_Main::OnAddBuyGoods()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	UpdateData();
+
+	CString szBuy;
+	m_comboBuyList.GetWindowTextA(szBuy);
+	CString szItem;
+	szItem.Format("购买 %s: %d", szBuy, m_nBuyCount);
+
+	CString* pData = new CString(szBuy);
+	int nCount = m_listBuys.AddString(szItem);
+	m_listBuys.SetItemData(nCount, (DWORD_PTR)pData);
+
+	Config& cfg = Config::GetConfig();
+	cfg.buys[szBuy] = m_nBuyCount;
+}
+
+
+void CCDialg_Main::OnModifyBuyItem()
+{
+	// TODO: 在此添加命令处理程序代码
+	int nSel = m_listBuys.GetCurSel();
+	if (nSel != CB_ERR)
+	{
+		CString* pData = (CString*)m_listBuys.GetItemData(nSel);
+		if (pData)
+		{
+			Config& cfg = Config::GetConfig();
+			auto iter = cfg.buys.find(*pData);
+			int nBuy = iter->second;
+			CBuyCountDlg dlg(nBuy);
+			dlg.DoModal();
+			int nNewBuy = dlg.GetBuyCount();
+			if (nNewBuy != nBuy)
+			{
+				m_listBuys.DeleteString(nSel);
+
+				CString szItem;
+				szItem.Format("购买 %s: %d", *pData, nNewBuy);
+				m_listBuys.InsertString(nSel, szItem);
+				m_listBuys.SetItemData(nSel, (DWORD_PTR)pData);
+
+				cfg.buys[*pData] = nNewBuy;
+			}
+		}
+	}
+}
+
+
+void CCDialg_Main::OnDeleteBuyItem()
+{
+	// TODO: 在此添加命令处理程序代码
+	int nSel;
+	nSel = m_listBuys.GetCurSel();
+	if (nSel == CB_ERR)
+	{
+		MessageBox("请选中一个记录");
+	}
+	else
+	{
+		CString* pData = (CString*)m_listBuys.GetItemData(nSel);
+		if (pData)
+		{
+			delete pData;
+			pData = NULL;
+		}
+		//删除listbox 中的记录
+		m_listBuys.DeleteString(nSel);
+	}
+}
+
+
+void CCDialg_Main::OnDblclkListBuy()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	OnModifyBuyItem();
 }

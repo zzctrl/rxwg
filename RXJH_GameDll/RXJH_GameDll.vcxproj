@@ -20,14 +20,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
@@ -103,7 +103,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddressData.cpp" />
+    <ClCompile Include="BuyCountDlg.cpp" />
     <ClCompile Include="CDialg_Main.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="CutThreadApp.cpp" />
     <ClCompile Include="EntifyMonster.cpp" />
     <ClCompile Include="EntityBase.cpp" />
@@ -111,6 +113,7 @@
     <ClCompile Include="EntityNPC.cpp" />
     <ClCompile Include="EntityPlayer.cpp" />
     <ClCompile Include="Funtion.cpp" />
+    <ClCompile Include="ListBoxEx.cpp" />
     <ClCompile Include="Package.cpp" />
     <ClCompile Include="PlayHelper.cpp" />
     <ClCompile Include="RXJH_GameDll.cpp" />
@@ -122,7 +125,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddressData.h" />
+    <ClInclude Include="BuyCountDlg.h" />
     <ClInclude Include="CDialg_Main.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="CutThreadApp.h" />
     <ClInclude Include="CommonRead.h" />
     <ClInclude Include="EntifyMonster.h" />
@@ -131,6 +136,7 @@
     <ClInclude Include="EntityNPC.h" />
     <ClInclude Include="EntityPlayer.h" />
     <ClInclude Include="Funtion.h" />
+    <ClInclude Include="ListBoxEx.h" />
     <ClInclude Include="Package.h" />
     <ClInclude Include="PlayHelper.h" />
     <ClInclude Include="Resource.h" />
@@ -140,6 +146,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="res\RXJH_GameDll.rc2" />
     <None Include="RXJH_GameDll.def" />
   </ItemGroup>

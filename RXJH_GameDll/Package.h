@@ -32,8 +32,5 @@ private:
 	int CountGoodsArray(const std::vector<CString>& a_Names);
 private:
 	static const int s_nPackageSize = 36;
-
-	std::vector<CString> m_HPdrugs;
-	std::vector<CString> m_MPdrugs;
 };
 

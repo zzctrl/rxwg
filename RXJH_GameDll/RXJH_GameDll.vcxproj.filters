@@ -66,6 +66,15 @@
     <ClCompile Include="Package.cpp">
       <Filter>rxfun</Filter>
     </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ListBoxEx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BuyCountDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RXJH_GameDll.h">
@@ -119,6 +128,15 @@
     <ClInclude Include="Package.h">
       <Filter>rxfun</Filter>
     </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ListBoxEx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BuyCountDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RXJH_GameDll.def">
@@ -127,6 +145,7 @@
     <None Include="res\RXJH_GameDll.rc2">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RXJH_GameDll.rc">

@@ -2,27 +2,13 @@
 #include "Package.h"
 #include "CommonRead.h"
 #include "AddressData.h"
+#include "Config.h"
 
 
 
 Package::Package()
 {
-	m_HPdrugs.push_back("金创药(小)");
-	m_HPdrugs.push_back("金创药(中)");
-	m_HPdrugs.push_back("金创药(大)");
-	m_HPdrugs.push_back("金创药(特)");
-	m_HPdrugs.push_back("金创药(超)");
-	m_HPdrugs.push_back("秘制金创药");
-	m_HPdrugs.push_back("药仙金创药");
-
-	m_MPdrugs.push_back("人参");
-	m_MPdrugs.push_back("野山参");
-	m_MPdrugs.push_back("雪原参");
-	m_MPdrugs.push_back("益元参");
-	m_MPdrugs.push_back("血参");
-	m_MPdrugs.push_back("幻型人参");
-	m_MPdrugs.push_back("秘制益元参");
-	m_MPdrugs.push_back("药仙益元参");
+	
 }
 
 
@@ -102,12 +88,12 @@ void Package::UseGoods(const CString& a_goodsName)
 // 统计背包里所有红/蓝药数量
 DWORD Package::GetAllHPDrugCount()
 {
-	int count = CountGoodsArray(m_HPdrugs);
+	int count = CountGoodsArray(Config::GetConfig().hpDrugs);
 	return count;
 }
 DWORD Package::GetAllMPDrugCount()
 {
-	int count = CountGoodsArray(m_MPdrugs);
+	int count = CountGoodsArray(Config::GetConfig().mpDrugs);
 	return count;
 }
 

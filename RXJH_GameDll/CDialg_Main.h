@@ -6,6 +6,9 @@
 #include "Funtion.h"
 #include "afxwin.h"
 #include "PlayHelper.h"
+#include "ListBoxEx.h"
+#include <map>
+
 
 class CCDialg_Main : public CDialog
 {
@@ -67,4 +70,12 @@ public:
 	int m_nHPCounts;
 	int m_nMPCounts;
 	int m_nArrowCounts;
+	CComboBox m_comboBuyList;
+	DWORD m_nBuyCount;
+	afx_msg void OnAddBuyGoods();
+	CListBoxEx m_listBuys;
+	std::map<CString, DWORD> m_buys;
+	afx_msg void OnModifyBuyItem();
+	afx_msg void OnDeleteBuyItem();
+	afx_msg void OnDblclkListBuy();
 };
