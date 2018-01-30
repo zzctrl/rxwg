@@ -291,3 +291,21 @@ void FindWalk(float x,float y)
 	pDate = nullptr;
 }
 //----------------------------------------------------------------------------
+void LogA(LPCSTR p_szFormat, ...)
+{
+	va_list args;
+	va_start(args, p_szFormat);
+
+	int nBuf;
+	char szBuffer[1024] = { 0 };
+	nBuf = _vsnprintf_s(szBuffer, sizeof(szBuffer) / sizeof(char) - 1, p_szFormat, args);
+	if (nBuf < 0)
+	{
+		va_end(args);
+		return;
+	}
+
+	::OutputDebugStringA(szBuffer);
+
+	va_end(args);
+}

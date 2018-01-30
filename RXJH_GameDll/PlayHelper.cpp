@@ -83,6 +83,11 @@ void PlayHelper::Work()
 			}
 		}
 	}
+	else
+	{
+		// 没有野怪，则返回挂机点
+		m_role.WalkTo(m_workPt);
+	}
 }
 // 保护功能，自动加血/蓝
 void PlayHelper::Protect()

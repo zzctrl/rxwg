@@ -34,3 +34,6 @@ void ActionCall(DWORD dwIndex = 2);
 
 void FindWalk(float x,float y);
 
+// log
+void LogA(LPCSTR p_szFormat, ...);
+

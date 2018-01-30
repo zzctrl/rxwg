@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "EntityBase.h"
+#include "Package.h"
 
 /*
 其他玩家类，包括当前登录用户角色
@@ -47,4 +48,8 @@ public:
 
 	// 使用技能
 	void UseSkill(const CString& a_skillName);
+
+	Package& GetPackage();
+private:
+	Package m_package;
 };

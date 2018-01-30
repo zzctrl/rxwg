@@ -26,11 +26,18 @@ CCDialg_Main::CCDialg_Main(CWnd* pParent /*=NULL*/)
 	, m_nLan(0)
 	, m_nX(0)
 	, m_nY(0)
-	, m_szMapName(_T(""))
+	//, m_szMapName(_T(""))
 	, m_nAttackRange(150)
 	, m_nProtectHP(150)
 	, m_nProtectMP(100)
 	, m_bNearest(TRUE)
+	, m_bPackageFull(FALSE)
+	, m_bArrows(FALSE)
+	, m_bMPCounts(FALSE)
+	, m_bHPCounts(TRUE)
+	, m_nHPCounts(3)
+	, m_nMPCounts(3)
+	, m_nArrowCounts(3)
 {
 	m_bWorking = false;
 }
@@ -42,12 +49,10 @@ CCDialg_Main::~CCDialg_Main()
 void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT1, m_nHong);
-	DDX_Text(pDX, IDC_EDIT2, m_nLan);
 	DDX_Text(pDX, IDC_EDIT4, m_nX);
 	DDX_Text(pDX, IDC_EDIT3, m_nY);
 	DDX_Control(pDX, IDC_BUTTON, m_btnWork);
-	DDX_Text(pDX, IDC_EDIT8, m_szMapName);
+	//DDX_Text(pDX, IDC_EDIT8, m_szMapName);
 	DDX_Text(pDX, IDC_EDIT5, m_nAttackRange);
 	DDX_Text(pDX, IDC_EDIT6, m_nProtectHP);
 	DDX_Text(pDX, IDC_EDIT7, m_nProtectMP);
@@ -55,6 +60,15 @@ void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO1, m_attackType);
 	DDX_Control(pDX, IDC_COMBO2, m_HPList);
 	DDX_Control(pDX, IDC_COMBO3, m_MPList);
+	DDX_Control(pDX, IDC_COMBO4, m_comboMap);
+	DDX_Control(pDX, IDC_COMBO5, m_comboSupply);
+	DDX_Check(pDX, IDC_CHECK5, m_bPackageFull);
+	DDX_Check(pDX, IDC_CHECK4, m_bArrows);
+	DDX_Check(pDX, IDC_CHECK3, m_bMPCounts);
+	DDX_Check(pDX, IDC_CHECK2, m_bHPCounts);
+	DDX_Text(pDX, IDC_EDIT8, m_nHPCounts);
+	DDX_Text(pDX, IDC_EDIT9, m_nMPCounts);
+	DDX_Text(pDX, IDC_EDIT10, m_nArrowCounts);
 }
 
 
@@ -66,6 +80,7 @@ BEGIN_MESSAGE_MAP(CCDialg_Main, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON2, &CCDialg_Main::OnGetCurrentPoint)
 	ON_BN_CLICKED(IDC_BUTTON3, &CCDialg_Main::OnApplyConfig)
 	ON_CBN_DROPDOWN(IDC_COMBO2, &CCDialg_Main::OnCbnDropdownHPList)
+	ON_BN_CLICKED(IDC_BUTTON4, &CCDialg_Main::OnLoadConfig)
 END_MESSAGE_MAP()
 
 
@@ -203,12 +218,12 @@ void CCDialg_Main::OnTimer(UINT_PTR nIDEvent)
 		UpdateData();
 
 		m_playHelper.Protect();
-		CString szMapName = m_playHelper.GetCurMap();
+		/*CString szMapName = m_playHelper.GetCurMap();
 		if (szMapName != m_szMapName)
 		{
 			m_szMapName = szMapName;
 			UpdateData(FALSE);
-		}
+		}*/
 	}
 	else if (nIDEvent == TIMERID_ATTACK)
 	{
@@ -230,8 +245,8 @@ void CCDialg_Main::ReadData()
 	m_nY = Read_RD(Read_RD(CordinateBaseAddress) + CordinateYOffset);
 	m_nY = 0 - m_nY;
 
-	char* pMapName = Read_RS(Read_RD(MapBaseAddress) + MapNameOffset);
-	m_szMapName = pMapName;
+	//char* pMapName = Read_RS(Read_RD(MapBaseAddress) + MapNameOffset);
+	//m_szMapName = pMapName;
 
 	UpdateData(FALSE);
 }
@@ -269,7 +284,7 @@ void CCDialg_Main::AttackWork()
 }
 void CCDialg_Main::ProtectWork()
 {
-	ReadData();
+	//ReadData();
 	// 生命值小于设定值，加血默认按F2
 	if (m_nHong < 300)
 	{
@@ -324,4 +339,10 @@ void CCDialg_Main::OnCbnDropdownHPList()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//m_HPList.AddString("test");
+}
+
+
+void CCDialg_Main::OnLoadConfig()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }

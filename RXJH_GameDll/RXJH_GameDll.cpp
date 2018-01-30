@@ -66,6 +66,26 @@ BOOL CRXJH_GameDllApp::InitInstance()
 	return TRUE;
 }
 
+WNDPROC pOrgWndProc = NULL;
+LRESULT CALLBACK myWndProc(HWND hwnd, UINT msg, WPARAM p1, LPARAM p2)
+{
+	LRESULT ret = 1;
+	if (pOrgWndProc)
+	{
+		ret = pOrgWndProc(hwnd, msg, p1, p2);
+	}
+	static bool bout = false;
+	if (!bout)
+	{
+		bout = true;
+		DWORD dwId = ::GetCurrentThreadId();
+		CString szmsg;
+		szmsg.Format("rxjh: myWndproc id=%x", dwId);
+		OutputDebugStringA(szmsg);
+	}
+	return ret;
+}
+
 LRESULT CALLBACK KeyboardProc(int code,
 							  WPARAM wParam,
 							  LPARAM lParam
@@ -76,6 +96,10 @@ LRESULT CALLBACK KeyboardProc(int code,
 	{
 		if (wParam == VK_F12)
 		{
+			// test
+			//HWND hWnd = ::GetForegroundWindow();
+			//pOrgWndProc = (WNDPROC)::SetWindowLongA(hWnd, GWL_WNDPROC, (LONG)myWndProc);
+			// endtest
 			if (nullptr == pThread)
 			{
 				pThread = AfxBeginThread(RUNTIME_CLASS(CutThreadApp));

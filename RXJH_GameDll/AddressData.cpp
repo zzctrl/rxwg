@@ -23,6 +23,8 @@ void InitAddress()
 	GoodsBaseOffestAddress = 0x410;     
 	GoodsNameOffset = 0x5C;
 	GoodsNumberOffset = 0xC44;
+	GoodsIDOffset = 0xD1C;
+	GoodsPropOffset = 0xD24;
 
 	GoodsUseCallAddress = 0x007FDC20;
 
@@ -49,6 +51,7 @@ void InitAddress()
 	EntityType_Player = 0x31;
 	EntityType_Goods = 0x33; 
 
+	EntityGoodsIDOffset = 0x78;
 	EntityGoodsNameOffset = 0x94;
 
 
@@ -81,6 +84,8 @@ DWORD GoodsBaseAddress;//背包的基址
 DWORD GoodsBaseOffestAddress;     //背包基本的偏移
 DWORD GoodsNameOffset; // 物品名称偏移
 DWORD GoodsNumberOffset; // 物品数量偏移
+DWORD GoodsIDOffset;
+DWORD GoodsPropOffset;
 
 DWORD GoodsUseCallAddress;// 使用背包物品call，参数为物品在背包中的索引下标(0-35)
 
@@ -106,6 +111,7 @@ DWORD EntityType_Monster; // 野怪
 DWORD EntityType_NPC; // NPC
 DWORD EntityType_Player; // 其他玩家
 DWORD EntityType_Goods; // 物品
+DWORD EntityGoodsIDOffset; // 物品ID偏移
 DWORD EntityGoodsNameOffset; // 物品名称偏移
 
 

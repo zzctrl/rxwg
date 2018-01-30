@@ -25,6 +25,11 @@ EntityRole::~EntityRole()
 
 }
 
+Package& EntityRole::GetPackage()
+{
+	return m_package;
+}
+
 // 获取角色当前血/蓝的百分比
 DWORD EntityRole::GetCurrentHP()
 {
@@ -50,13 +55,40 @@ POINT EntityRole::GetPoint()
 // 使用物品
 void EntityRole::UseGoods(const CString& a_goodsName)
 {
-
+	m_package.UseGoods(a_goodsName);
 }
 
 // 寻路到指定坐标
 void EntityRole::WalkTo(POINT a_pt)
 {
+	float x = a_pt.x;
+	float y = a_pt.y;
+	BYTE* pDate = new BYTE[84];
+	memset(pDate, 0, 84);
 
+	_asm
+	{
+		mov ebx, pDate
+		mov eax, x
+		mov[ebx], eax
+		mov eax, y
+		mov[ebx + 8], eax
+		mov[ebx + 0x18], 0xFFFF
+		mov[ebx + 0x1C], 1
+		mov BYTE PTR DS : [ebx + 0x20], 1
+
+		push 0x54
+		push pDate
+		push 0x3EF
+		mov ecx, EntityBaseAddress
+		mov ecx, [ecx]
+		mov edx, [ecx]
+		mov edx, [edx + 4]
+		call edx
+
+	}
+	delete pDate;
+	pDate = nullptr;
 }
 
 // 使用动作

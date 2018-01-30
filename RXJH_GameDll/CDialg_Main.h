@@ -45,7 +45,7 @@ private:
 	PlayHelper m_playHelper;
 public:
 	CButton m_btnWork;
-	CString m_szMapName;
+	//CString m_szMapName;
 	DWORD m_nAttackRange;
 	DWORD m_nProtectHP;
 	DWORD m_nProtectMP;
@@ -57,4 +57,14 @@ public:
 	afx_msg void OnGetCurrentPoint();
 	afx_msg void OnApplyConfig();
 	afx_msg void OnCbnDropdownHPList();
+	CComboBox m_comboMap;
+	afx_msg void OnLoadConfig();
+	CComboBox m_comboSupply;
+	BOOL m_bPackageFull;
+	BOOL m_bArrows;
+	BOOL m_bMPCounts;
+	BOOL m_bHPCounts;
+	int m_nHPCounts;
+	int m_nMPCounts;
+	int m_nArrowCounts;
 };
