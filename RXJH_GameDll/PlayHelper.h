@@ -31,9 +31,9 @@ public:
 	void SetAttackIndex(int a_index);
 	void SetNearestPrior(bool a_nearest);
 
-	// 设置HP/MP保护百分比，低于这个值则自动加血/蓝
-	void SetProtectHPPercent(DWORD a_percent);
-	void SetProtectMPPercent(DWORD a_percent);
+	// 设置HP/MP保护值，低于这个值则自动加血/蓝
+	void SetProtectHP(DWORD a_protectHP);
+	void SetProtectMP(DWORD a_protectMP);
 
 	void SetPriorHPDrug(const CString& a_drugName);
 	void SetPriorMPDrug(const CString& a_drugName);
@@ -52,8 +52,8 @@ private:
 	EntityRole m_role;
 
 	// HP/MP保护设置，百分比
-	DWORD m_percentHP;
-	DWORD m_percentMP;
+	DWORD m_protectHP;
+	DWORD m_protectMP;
 	// 挂机点和范围
 	POINT m_workPt;
 	DWORD m_workRange;

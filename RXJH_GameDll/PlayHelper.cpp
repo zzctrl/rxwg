@@ -5,9 +5,12 @@
 
 PlayHelper::PlayHelper()
 {
-	m_percentHP = 50;
-	m_percentMP = 50;
+	m_protectHP = 150;
+	m_protectMP = 100;
 	m_workRange = 150;
+	m_attackIndex = 0;
+	m_minMonsterID = 1;
+	m_maxMonsterID = 0x2710;
 	m_bNearest = true;
 }
 
@@ -84,15 +87,15 @@ void PlayHelper::Work()
 // 保护功能，自动加血/蓝
 void PlayHelper::Protect()
 {
-	DWORD dwHPPercent = m_role.GetHPPercent();
-	if (dwHPPercent <= m_percentHP)
+	DWORD dwCurrentHP= m_role.GetCurrentHP();
+	if (dwCurrentHP <= m_protectHP)
 	{
 		// 吃红药
 		m_role.UseShortcutF1_F10(EntityRole::FC_F2);
 	}
 
-	DWORD dwMPPercent = m_role.GetMPPercent();
-	if (dwMPPercent <= m_percentMP)
+	DWORD dwCurrentMP = m_role.GetCurrentMP();
+	if (dwCurrentMP <= m_protectMP)
 	{
 		// 吃蓝药
 		m_role.UseShortcutF1_F10(EntityRole::FC_F3);
@@ -126,7 +129,7 @@ void PlayHelper::SetWorkRange(DWORD a_range)
 
 void PlayHelper::SetAttackIndex(int a_index)
 {
-	m_attackIndex;
+	m_attackIndex = a_index;
 }
 
 void PlayHelper::SetNearestPrior(bool a_nearest)
@@ -135,13 +138,13 @@ void PlayHelper::SetNearestPrior(bool a_nearest)
 }
 
 // 设置HP/MP保护百分比，低于这个值则自动加血/蓝
-void PlayHelper::SetProtectHPPercent(DWORD a_percent)
+void PlayHelper::SetProtectHP(DWORD a_protectHP)
 {
-	m_percentHP = a_percent;
+	m_protectHP = a_protectHP;
 }
-void PlayHelper::SetProtectMPPercent(DWORD a_percent)
+void PlayHelper::SetProtectMP(DWORD a_protectMP)
 {
-	m_percentMP = a_percent;
+	m_protectMP = a_protectMP;
 }
 
 void PlayHelper::SetPriorHPDrug(const CString& a_drugName)

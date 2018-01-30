@@ -47,8 +47,8 @@ public:
 	CButton m_btnWork;
 	CString m_szMapName;
 	DWORD m_nAttackRange;
-	DWORD m_nHongPer;
-	DWORD m_nLanPer;
+	DWORD m_nProtectHP;
+	DWORD m_nProtectMP;
 	BOOL m_bNearest;
 	CComboBox m_attackType;
 	CComboBox m_HPList;

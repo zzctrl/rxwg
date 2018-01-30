@@ -28,8 +28,8 @@ CCDialg_Main::CCDialg_Main(CWnd* pParent /*=NULL*/)
 	, m_nY(0)
 	, m_szMapName(_T(""))
 	, m_nAttackRange(150)
-	, m_nHongPer(50)
-	, m_nLanPer(50)
+	, m_nProtectHP(150)
+	, m_nProtectMP(100)
 	, m_bNearest(TRUE)
 {
 	m_bWorking = false;
@@ -49,8 +49,8 @@ void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON, m_btnWork);
 	DDX_Text(pDX, IDC_EDIT8, m_szMapName);
 	DDX_Text(pDX, IDC_EDIT5, m_nAttackRange);
-	DDX_Text(pDX, IDC_EDIT6, m_nHongPer);
-	DDX_Text(pDX, IDC_EDIT7, m_nLanPer);
+	DDX_Text(pDX, IDC_EDIT6, m_nProtectHP);
+	DDX_Text(pDX, IDC_EDIT7, m_nProtectMP);
 	DDX_Check(pDX, IDC_CHECK1, m_bNearest);
 	DDX_Control(pDX, IDC_COMBO1, m_attackType);
 	DDX_Control(pDX, IDC_COMBO2, m_HPList);
@@ -304,8 +304,8 @@ void CCDialg_Main::OnApplyConfig()
 	m_playHelper.SetWorkRange(m_nAttackRange);
 	m_playHelper.SetNearestPrior(m_bNearest);
 
-	m_playHelper.SetProtectHPPercent(m_nHongPer);
-	m_playHelper.SetProtectMPPercent(m_nLanPer);
+	m_playHelper.SetProtectHP(m_nProtectHP);
+	m_playHelper.SetProtectMP(m_nProtectMP);
 
 	int sel = m_attackType.GetCurSel();
 	m_playHelper.SetAttackIndex(sel);

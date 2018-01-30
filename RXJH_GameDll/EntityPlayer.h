@@ -27,8 +27,8 @@ public:
 	~EntityRole();
 
 	// 获取角色当前血/蓝的百分比
-	DWORD GetHPPercent();
-	DWORD GetMPPercent();
+	DWORD GetCurrentHP();
+	DWORD GetCurrentMP();
 
 	// 获取角色当前坐标
 	POINT GetPoint();

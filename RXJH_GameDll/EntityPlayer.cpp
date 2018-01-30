@@ -26,19 +26,24 @@ EntityRole::~EntityRole()
 }
 
 // 获取角色当前血/蓝的百分比
-DWORD EntityRole::GetHPPercent()
+DWORD EntityRole::GetCurrentHP()
 {
-	return 70;
+	DWORD dwHP = Read_RD(UserBaseAddress + UserHPOffset);
+	return dwHP;
 }
-DWORD EntityRole::GetMPPercent()
+DWORD EntityRole::GetCurrentMP()
 {
-	return 70;
+	DWORD dwMP = Read_RD(UserBaseAddress + UserMPOffset);
+	return dwMP;
 }
 
 // 获取角色当前坐标
 POINT EntityRole::GetPoint()
 {
 	POINT pt = { 0 };
+	pt.x = Read_RD(Read_RD(CordinateBaseAddress) + CordinateXOffset);
+	pt.y = Read_RD(Read_RD(CordinateBaseAddress) + CordinateYOffset);
+	pt.y = 0 - pt.y;
 	return pt;
 }
 
