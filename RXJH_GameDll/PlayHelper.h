@@ -47,6 +47,9 @@ private:
 
 	// 初始化周围怪物的ID范围
 	void InitMonterIDRange();
+
+	//  回城检测
+	void CheckBackForSupply();
 private:
 	// 当前角色对象
 	EntityRole m_role;

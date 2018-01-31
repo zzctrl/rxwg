@@ -47,6 +47,12 @@ void outstr(const char* log)
 // 定时调用，自动选怪/攻击
 void PlayHelper::Work()
 {
+	// 是否在寻路状态
+	if (m_role.CheckWalkStatus())
+	{
+		return;
+	}
+
 	DWORD dwSelID = GetCurSelID();
 	if (EntityBase::ID_NULL == dwSelID)
 	{
@@ -113,6 +119,8 @@ void PlayHelper::Protect()
 		// 吃蓝药
 		m_role.UseShortcutF1_F10(EntityRole::FC_F3);
 	}
+	// 回城检测
+	CheckBackForSupply();
 }
 
 POINT PlayHelper::GetCurPoint()
@@ -246,4 +254,70 @@ DWORD PlayHelper::CheckMonster()
 	}
 
 	return dwSelID;
+}
+
+void PlayHelper::CheckBackForSupply()
+{
+	Config& cfg = Config::GetConfig();
+	Package& package = m_role.GetPackage();
+	bool bNeedSupply = false;
+	do
+	{
+		if (cfg.bCheckHPDrugs)
+		{
+			if (package.GetAllHPDrugCount() < cfg.nMinHPDrugs)
+			{
+				bNeedSupply = true;
+				break;
+			}
+		}
+		if (cfg.bCheckMPDrugs)
+		{
+			if (package.GetAllMPDrugCount() < cfg.nMinMPDrugs)
+			{
+				bNeedSupply = true;
+				break;
+			}
+		}
+		if (cfg.bCheckPackage)
+		{
+			if (package.IsPackageFull())
+			{
+				bNeedSupply = true;
+				break;
+			}
+		}
+		if (cfg.bCheckArrows)
+		{
+			/*if (1)
+			{
+				bNeedSupply = true;
+				break;
+			}*/
+		}
+	} while (0);
+	
+	// 需要回城补给
+	if (bNeedSupply)
+	{
+		// 判断是否有回城符
+		CString szUseGoods = cfg.szSupplyMap + "(回城符)";
+		int index = package.GetGoodsIndex(szUseGoods);
+		if (index >= 0)
+		{
+			package.UseGoods(index);
+		}
+		else
+		{
+			// 如果补给地图跟挂机地图一样，则跑路回去
+			if (cfg.szSupplyMap == cfg.szWorkMap)
+			{
+				//m_role.WalkTo();
+			}
+			else
+			{
+				// 找到回补给地图的路径
+			}
+		}
+	}
 }

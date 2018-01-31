@@ -18,7 +18,7 @@ EntityPlayer::~EntityPlayer()
 EntityRole::EntityRole(DWORD a_id)
 :EntityBase(a_id)
 {
-
+	m_bWalking = false;
 }
 EntityRole::~EntityRole()
 {
@@ -58,9 +58,24 @@ void EntityRole::UseGoods(const CString& a_goodsName)
 	m_package.UseGoods(a_goodsName);
 }
 
+bool EntityRole::CheckWalkStatus()
+{
+	if (m_bWalking)
+	{
+		POINT pt = GetPoint();
+		if (pt.x == m_destPt.x && pt.y == m_destPt.y)
+		{
+			m_bWalking = false;
+		}
+	}
+	return m_bWalking;
+}
 // 寻路到指定坐标
 void EntityRole::WalkTo(POINT a_pt)
 {
+	m_bWalking = true;
+	m_destPt = a_pt;
+
 	float x = a_pt.x;
 	float y = a_pt.y;
 	BYTE* pDate = new BYTE[84];

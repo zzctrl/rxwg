@@ -39,6 +39,8 @@ public:
 
 	// 寻路到指定坐标
 	void WalkTo(POINT a_pt);
+	// 检测是否在寻路状态
+	bool CheckWalkStatus();
 
 	// 使用动作
 	void DoAction(Action a_index);
@@ -52,4 +54,8 @@ public:
 	Package& GetPackage();
 private:
 	Package m_package;
+
+	// 寻路状态和目的坐标
+	bool m_bWalking;
+	POINT m_destPt;
 };

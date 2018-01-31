@@ -25,6 +25,9 @@ public:
 	DWORD GetAllHPDrugCount();
 	DWORD GetAllMPDrugCount();
 
+	// 背包是否已满
+	bool IsPackageFull();
+
 private:
 	CString GetGoodsName(DWORD dwData);
 	int GetGoodsCount(DWORD dwData);

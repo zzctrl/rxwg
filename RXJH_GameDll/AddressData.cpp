@@ -28,6 +28,11 @@ void InitAddress()
 
 	GoodsUseCallAddress = 0x007FDC20;
 
+	ShopBaseAddress = 0x02D37CF4;
+	ShopBaseOffset = 0x410; 
+	ShopItemIDOffset = 0x4C; 
+	ShowItemNameOffset = 0x5C;
+
 
 	EntityBaseAddress = 0x02D36514;
 	EntitySelOffset = 0x1A3C;
@@ -88,6 +93,11 @@ DWORD GoodsIDOffset;
 DWORD GoodsPropOffset;
 
 DWORD GoodsUseCallAddress;// 使用背包物品call，参数为物品在背包中的索引下标(0-35)
+
+DWORD ShopBaseAddress; // 商店基址
+DWORD ShopBaseOffset; // 商店基本偏移值
+DWORD ShopItemIDOffset; // 商店物品ID偏移
+DWORD ShowItemNameOffset; // 商店物品名称偏移
 
 						  // 选中的怪物相关地址
 DWORD EntityBaseAddress;// 选中怪物ID基址

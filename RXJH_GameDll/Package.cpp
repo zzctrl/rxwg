@@ -85,6 +85,19 @@ void Package::UseGoods(const CString& a_goodsName)
 	}
 }
 
+bool Package::IsPackageFull()
+{
+	for (int i = 0; i < s_nPackageSize; i++)
+	{
+		DWORD dwNation = Read_RD(Read_RD(GoodsBaseAddress) + i * 4 + GoodsBaseOffestAddress);
+		if (0x0 == dwNation)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 // 统计背包里所有红/蓝药数量
 DWORD Package::GetAllHPDrugCount()
 {

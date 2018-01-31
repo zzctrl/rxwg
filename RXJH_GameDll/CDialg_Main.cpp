@@ -452,6 +452,7 @@ void CCDialg_Main::OnDeleteBuyItem()
 	else
 	{
 		CString* pData = (CString*)m_listBuys.GetItemData(nSel);
+		CString szName = *pData;
 		if (pData)
 		{
 			delete pData;
@@ -459,6 +460,9 @@ void CCDialg_Main::OnDeleteBuyItem()
 		}
 		//删除listbox 中的记录
 		m_listBuys.DeleteString(nSel);
+
+		Config& cfg = Config::GetConfig();
+		cfg.buys.erase(szName);
 	}
 }
 
