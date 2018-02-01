@@ -96,7 +96,7 @@ void EntityBase::Select()
 			MOV EAX, [ESI + 0x0C]
 			MOV ECX, EntityBaseAddress
 			mov ecx, [ecx]
-			mov[ecx + 0x1a3c], eax
+			mov dword ptr [ecx + 0x1a3c], eax
 		}
 	}
 }

@@ -5,15 +5,18 @@
 
 struct MapInfo
 {
-	CString szName;
-	CString szSupplyNpc;
-	POINT supplyPt;
+	CString szName; // 地图名称
+	CString szHCFName;// 回城符名称
+	CString szSupplyNpc; // 补给NPC名称
+	POINT supplyPt; // 补给NPC坐标
 };
 
 class Config
 {
 public:
 	static Config& GetConfig();
+
+	bool GetMapInfoByName(const CString& a_mapName, MapInfo& a_info);
 
 	// 保护设置
 	int nProtectHP;

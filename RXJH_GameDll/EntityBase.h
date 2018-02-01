@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "AddressData.h"
 #include "CommonRead.h"
+#include "Funtion.h"
 
 /*
 热血对象基类

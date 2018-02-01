@@ -193,7 +193,7 @@ BOOL CCDialg_Main::OnInitDialog()
 	// 初始化地址数据
 	InitAddress();
 
-	//SetTimer(TIMERID_PROTECT, 200, NULL);
+	SetTimer(TIMERID_PROTECT, 200, NULL);
 	
 	// 初始控件数据
 	CString szShrotCut[10] = {" F1", " F2", " F3", " F4", " F5", " F6", " F7", " F8", " F9", " F10" };

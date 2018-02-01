@@ -3,6 +3,7 @@
 #include "CommonRead.h"
 #include "AddressData.h"
 #include "Config.h"
+#include "Funtion.h"
 
 
 
@@ -23,11 +24,12 @@ CString Package::GetGoodsName(DWORD dwData)
 
 int Package::GetGoodsCount(DWORD dwData)
 {
-	return Read_RD(dwData + GoodsNameOffset);
+	return Read_RD(dwData + GoodsNumberOffset);
 }
 // 获取指定名称物品的数量
 DWORD Package::GetGoodsCount(const CString& a_goodsName)
 {
+	DWORD dwCount = 0;
 	for (int i = 0; i < s_nPackageSize; i++)
 	{
 		DWORD dwNation = Read_RD(Read_RD(GoodsBaseAddress) + i * 4 + GoodsBaseOffestAddress);
@@ -37,10 +39,12 @@ DWORD Package::GetGoodsCount(const CString& a_goodsName)
 		}
 		if (a_goodsName == GetGoodsName(dwNation))
 		{
-			return GetGoodsCount(dwNation);
+			dwCount = GetGoodsCount(dwNation);
+			break;
 		}
 	}
-	return 0;
+	LogA("rxjh: goodsname=%s, count=%d", (const char*)a_goodsName, (int)dwCount);
+	return dwCount;
 }
 // 获取物品的索引，如果物品不存在返回-1
 int Package::GetGoodsIndex(const CString& a_goodsName)
@@ -102,6 +106,7 @@ bool Package::IsPackageFull()
 DWORD Package::GetAllHPDrugCount()
 {
 	int count = CountGoodsArray(Config::GetConfig().hpDrugs);
+	LogA("rxjh: GetAllHPDrugCount=%d", count);
 	return count;
 }
 DWORD Package::GetAllMPDrugCount()

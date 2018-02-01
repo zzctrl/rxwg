@@ -4,6 +4,7 @@
 #include "Config.h"
 
 
+
 PlayHelper::PlayHelper()
 {
 	m_protectHP = 150;
@@ -300,23 +301,28 @@ void PlayHelper::CheckBackForSupply()
 	// 需要回城补给
 	if (bNeedSupply)
 	{
-		// 判断是否有回城符
-		CString szUseGoods = cfg.szSupplyMap + "(回城符)";
-		int index = package.GetGoodsIndex(szUseGoods);
-		if (index >= 0)
+		MapInfo info;
+		if (cfg.GetMapInfoByName(cfg.szSupplyMap, info))
 		{
-			package.UseGoods(index);
-		}
-		else
-		{
-			// 如果补给地图跟挂机地图一样，则跑路回去
-			if (cfg.szSupplyMap == cfg.szWorkMap)
+			// 判断是否有回城符
+			int index = package.GetGoodsIndex(info.szHCFName);
+			if (index >= 0)
 			{
-				//m_role.WalkTo();
+				package.UseGoods(index);
+				::Sleep(1000);
+				m_role.WalkTo(info.supplyPt);
 			}
 			else
 			{
-				// 找到回补给地图的路径
+				// 如果补给地图跟挂机地图一样，则跑路回去
+				if (cfg.szSupplyMap == cfg.szWorkMap)
+				{
+					m_role.WalkTo(info.supplyPt);
+				}
+				else
+				{
+					// 找到回补给地图的路径
+				}
 			}
 		}
 	}
