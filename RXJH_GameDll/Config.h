@@ -16,7 +16,7 @@ class Config
 public:
 	static Config& GetConfig();
 
-	bool GetMapInfoByName(const CString& a_mapName, MapInfo& a_info);
+	bool GetMapInfoByName(const CString& a_mapName, MapInfo& a_info) const;
 
 	// ±£ª§…Ë÷√
 	int nProtectHP;

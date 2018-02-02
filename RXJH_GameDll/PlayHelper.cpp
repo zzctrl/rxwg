@@ -7,13 +7,9 @@
 
 PlayHelper::PlayHelper()
 {
-	m_protectHP = 150;
-	m_protectMP = 100;
-	m_workRange = 150;
-	m_attackIndex = 0;
 	m_minMonsterID = 1;
 	m_maxMonsterID = 0x2710;
-	m_bNearest = true;
+	m_curStatus = WS_None;
 }
 
 
@@ -24,36 +20,29 @@ PlayHelper::~PlayHelper()
 // 开始/停止挂机
 void PlayHelper::Start()
 {
-	Config& cfg = Config::GetConfig();
-	m_workPt = cfg.pt;
-	m_workRange = cfg.nAttackRange;
-	// 初始化挂机范围
-	m_rcRange.left = m_workPt.x - m_workRange;
-	m_rcRange.right = m_workPt.x + m_workRange;
-	m_rcRange.top = m_workPt.y - m_workRange;
-	m_rcRange.bottom = m_workPt.y + m_workRange;
-	// 初始话周围怪物的ID范围(最大，最小值)
-	InitMonterIDRange();
+	m_curStatus = WS_Attack;
+	UpdateConfig();
 }
 void PlayHelper::Stop()
 {
-
+	m_curStatus = WS_None;
 }
 
-void outstr(const char* log)
+void PlayHelper::UpdateConfig()
 {
-	::OutputDebugString(log);
+	Config& cfg = Config::GetConfig();
+	// 初始化挂机范围
+	m_rcRange.left = cfg.pt.x - cfg.nAttackRange;
+	m_rcRange.right = cfg.pt.x + cfg.nAttackRange;
+	m_rcRange.top = cfg.pt.y - cfg.nAttackRange;
+	m_rcRange.bottom = cfg.pt.y + cfg.nAttackRange;
+	// 初始话周围怪物的ID范围(最大，最小值)
+	InitMonterIDRange();
 }
 
-// 定时调用，自动选怪/攻击
-void PlayHelper::Work()
+// 自动选怪，攻击
+void PlayHelper::AutoAttack()
 {
-	// 是否在寻路状态
-	if (m_role.CheckWalkStatus())
-	{
-		return;
-	}
-
 	DWORD dwSelID = GetCurSelID();
 	if (EntityBase::ID_NULL == dwSelID)
 	{
@@ -67,6 +56,8 @@ void PlayHelper::Work()
 			dwSelID = CheckMonster();
 		}
 	}
+
+	const Config& cfg = Config::GetConfig();
 	if (EntityBase::ID_NULL != dwSelID)
 	{
 		// 类型为野怪
@@ -81,16 +72,15 @@ void PlayHelper::Work()
 			}
 			else
 			{
-				Config& cfg = Config::GetConfig();
-				m_attackIndex = cfg.nAttackType;
+				int nAttackIndex = cfg.nAttackType;
 				// 普攻或技能
-				if (0 == m_attackIndex)
+				if (0 == nAttackIndex)
 				{
 					m_role.DoAction(EntityRole::Attack);
 				}
 				else
 				{
-					EntityRole::ShortCut sc = static_cast<EntityRole::ShortCut>(m_attackIndex - 1);
+					EntityRole::ShortCut sc = static_cast<EntityRole::ShortCut>(nAttackIndex - 1);
 					m_role.UseShortcutF1_F10(sc);
 				}
 			}
@@ -98,9 +88,79 @@ void PlayHelper::Work()
 	}
 	else
 	{
-		Config& cfg = Config::GetConfig();
 		// 没有野怪，则返回挂机点
 		m_role.WalkTo(cfg.pt);
+	}
+}
+void PlayHelper::WalkToDepotNPC()
+{
+
+}
+// 移动到指定NPC处
+void PlayHelper::WalkToSupplyNPC()
+{
+	const Config& cfg = Config::GetConfig();
+	MapInfo info;
+	if (cfg.GetMapInfoByName(cfg.szSupplyMap, info))
+	{
+		POINT curPt = m_role.GetPoint();
+		POINT& destPt = info.supplyPt;
+		// 应该先判断当前是否是补给地图??
+		// 判断是否已经到达目的点
+		if (curPt.x == destPt.x && curPt.y == destPt.y)
+		{
+			// 购买清单上的物品
+
+			// 返回挂机点
+			m_curStatus = WS_GoToWorkPt;
+		}
+		else
+		{
+			m_role.WalkTo(destPt);
+		}
+	}
+}
+// 移动到挂机点
+void PlayHelper::WalkToWorkPoint()
+{
+	const Config& cfg = Config::GetConfig();
+	MapInfo info;
+	if (cfg.GetMapInfoByName(cfg.szWorkMap, info))
+	{
+		POINT curPt = m_role.GetPoint();
+		const POINT& destPt = cfg.pt;
+		// 判断是否已经到挂机点
+		if (curPt.x == destPt.x && curPt.y == destPt.y)
+		{
+			// 开始自动选怪，攻击
+			m_curStatus = WS_Attack;
+		}
+		else
+		{
+			m_role.WalkTo(destPt);
+		}
+	}
+}
+
+// 定时调用，自动选怪/攻击
+void PlayHelper::Work()
+{
+	switch (m_curStatus)
+	{
+	case PlayHelper::WS_Attack:
+		AutoAttack();
+		break;
+	case PlayHelper::WS_GoToDepotNPC:
+		WalkToDepotNPC();
+		break;
+	case PlayHelper::WS_GoToSupplyNPC:
+		WalkToSupplyNPC();
+		break;
+	case PlayHelper::WS_GoToWorkPt:
+		WalkToWorkPoint();
+		break;
+	default:
+		break;
 	}
 }
 // 保护功能，自动加血/蓝
@@ -121,7 +181,10 @@ void PlayHelper::Protect()
 		m_role.UseShortcutF1_F10(EntityRole::FC_F3);
 	}
 	// 回城检测
-	CheckBackForSupply();
+	if (WS_Attack == m_curStatus)
+	{
+		CheckBackForSupply();
+	}
 }
 
 POINT PlayHelper::GetCurPoint()
@@ -136,46 +199,6 @@ CString PlayHelper::GetCurMap()
 {
 	char* pMapName = Read_RS(Read_RD(MapBaseAddress) + MapNameOffset);
 	return pMapName ? pMapName : "";
-}
-
-// 设置挂机点
-void PlayHelper::SetWorkPoint(POINT a_pt)
-{
-	m_workPt = a_pt;
-}
-
-void PlayHelper::SetWorkRange(DWORD a_range)
-{
-	m_workRange = a_range;
-}
-
-void PlayHelper::SetAttackIndex(int a_index)
-{
-	m_attackIndex = a_index;
-}
-
-void PlayHelper::SetNearestPrior(bool a_nearest)
-{
-	m_bNearest = a_nearest;
-}
-
-// 设置HP/MP保护百分比，低于这个值则自动加血/蓝
-void PlayHelper::SetProtectHP(DWORD a_protectHP)
-{
-	m_protectHP = a_protectHP;
-}
-void PlayHelper::SetProtectMP(DWORD a_protectMP)
-{
-	m_protectMP = a_protectMP;
-}
-
-void PlayHelper::SetPriorHPDrug(const CString& a_drugName)
-{
-	m_szPriorHPDrug = a_drugName;
-}
-void PlayHelper::SetPriorMPDrug(const CString& a_drugName)
-{
-	m_szPriorMPDrug = a_drugName;
 }
 
 void PlayHelper::InitMonterIDRange()
@@ -211,7 +234,7 @@ DWORD PlayHelper::CheckMonster()
 	float dwDistion = 0.0f;
 	EntifyMonster monster;
 	Config& cfg = Config::GetConfig();
-	m_bNearest = cfg.bNearestPrior;
+	bool bNearest = cfg.bNearestPrior;
 	for (DWORD dwID = m_minMonsterID; dwID <= m_maxMonsterID; dwID++)
 	{
 		// 类型为野怪
@@ -227,7 +250,7 @@ DWORD PlayHelper::CheckMonster()
 				{
 					float dist = monster.GetDistance();
 					// 最近优先还是最远优先
-					if (m_bNearest)
+					if (bNearest)
 					{
 						if (dwDistion == 0.0f || dwDistion > dist)
 						{
@@ -304,13 +327,12 @@ void PlayHelper::CheckBackForSupply()
 		MapInfo info;
 		if (cfg.GetMapInfoByName(cfg.szSupplyMap, info))
 		{
+			m_curStatus = WS_GoToSupplyNPC;
 			// 判断是否有回城符
 			int index = package.GetGoodsIndex(info.szHCFName);
 			if (index >= 0)
 			{
 				package.UseGoods(index);
-				::Sleep(1000);
-				m_role.WalkTo(info.supplyPt);
 			}
 			else
 			{

@@ -86,17 +86,20 @@ void EntityBase::Select()
 	{
 		_asm
 		{
-			MOV ESI, dwNation
-			MOV EAX, [ESI]
-			MOV EDX, [EAX + 0x4]
-			PUSH 0x1
-			PUSH 0x450
-			MOV ECX, ESI
-			CALL EDX
-			MOV EAX, [ESI + 0x0C]
-			MOV ECX, EntityBaseAddress
+			mov eax, esp
+			mov esi, dwNation
+			mov eax, [esi]
+			mov edx, [eax + 0x4]
+			push 0
+			push 0x1
+			push 0x450
+			mov ecx, esi
+			CALL edx
+			mov eax, [esi + 0x0C]
+			mov ecx, EntityBaseAddress
 			mov ecx, [ecx]
-			mov dword ptr [ecx + 0x1a3c], eax
+			mov [ecx + 0x1a3c], eax
+			mov eax, esp
 		}
 	}
 }

@@ -193,7 +193,7 @@ BOOL CCDialg_Main::OnInitDialog()
 	// 初始化地址数据
 	InitAddress();
 
-	SetTimer(TIMERID_PROTECT, 200, NULL);
+	//SetTimer(TIMERID_PROTECT, 200, NULL);
 	
 	// 初始控件数据
 	CString szShrotCut[10] = {" F1", " F2", " F3", " F4", " F5", " F6", " F7", " F8", " F9", " F10" };
@@ -321,8 +321,11 @@ void CCDialg_Main::ProtectWork()
 void CCDialg_Main::OnGetCurrentPoint()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	Config& cfg = Config::GetConfig();
+	// 挂机设置
 	POINT pt = m_playHelper.GetCurPoint();
-	m_playHelper.SetWorkPoint(pt);
+	cfg.pt = pt;
+	m_playHelper.UpdateConfig();
 
 	m_nX = pt.x;
 	m_nY = pt.y;
@@ -335,28 +338,13 @@ void CCDialg_Main::OnApplyConfig()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData();
-	POINT pt = { m_nX, m_nY };
-	m_playHelper.SetWorkPoint(pt);
-	m_playHelper.SetWorkRange(m_nAttackRange);
-	m_playHelper.SetNearestPrior(m_bNearest);
-
-	m_playHelper.SetProtectHP(m_nProtectHP);
-	m_playHelper.SetProtectMP(m_nProtectMP);
-
-	int sel = m_attackType.GetCurSel();
-	m_playHelper.SetAttackIndex(sel);
-
-	CString szName;
-	m_HPList.GetWindowTextA(szName);
-	m_playHelper.SetPriorHPDrug(szName);
-
-	m_MPList.GetWindowTextA(szName);
-	m_playHelper.SetPriorMPDrug(szName);
-
+	
 	Config& cfg = Config::GetConfig();
 	// 挂机设置
+	POINT pt = { m_nX, m_nY };
 	cfg.pt = pt;
 	m_comboMap.GetWindowTextA(cfg.szWorkMap);
+	int sel = m_attackType.GetCurSel();
 	cfg.nAttackType = sel;
 	cfg.nAttackRange = m_nAttackRange;
 	cfg.bNearestPrior = m_bNearest;
@@ -374,6 +362,8 @@ void CCDialg_Main::OnApplyConfig()
 	cfg.nMinArrows = m_nArrowCounts;
 	cfg.bCheckPackage = m_bPackageFull;
 	m_comboSupply.GetWindowTextA(cfg.szSupplyMap);
+
+	m_playHelper.UpdateConfig();
 }
 
 

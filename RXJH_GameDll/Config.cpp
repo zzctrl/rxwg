@@ -39,7 +39,7 @@ Config& Config::GetConfig()
 	return sInstance;
 }
 
-bool Config::GetMapInfoByName(const CString& a_mapName, MapInfo& a_info)
+bool Config::GetMapInfoByName(const CString& a_mapName, MapInfo& a_info) const
 {
 	for (int i = 0; i < maps.size(); i++)
 	{

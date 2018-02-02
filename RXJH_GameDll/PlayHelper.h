@@ -14,6 +14,8 @@ public:
 	// 开始/停止挂机
 	void Start();
 	void Stop();
+	// 更新设置
+	void UpdateConfig();
 
 	// 定时调用，自动选怪/攻击
 	void Work();
@@ -24,19 +26,16 @@ public:
 	POINT GetCurPoint();
 	CString GetCurMap();
 
-	// 设置挂机点和范围
-	void SetWorkPoint(POINT a_pt);
-	void SetWorkRange(DWORD a_range);
-
-	void SetAttackIndex(int a_index);
-	void SetNearestPrior(bool a_nearest);
-
-	// 设置HP/MP保护值，低于这个值则自动加血/蓝
-	void SetProtectHP(DWORD a_protectHP);
-	void SetProtectMP(DWORD a_protectMP);
-
-	void SetPriorHPDrug(const CString& a_drugName);
-	void SetPriorMPDrug(const CString& a_drugName);
+private:
+	// 挂机相关功能
+	// 自动选怪，攻击
+	void AutoAttack();
+	// 移动到仓库NPC处
+	void WalkToDepotNPC();
+	// 移动到补给NPC处
+	void WalkToSupplyNPC();
+	// 移动到挂机点
+	void WalkToWorkPoint();
 
 private:
 	// 获取当前选中的ID
@@ -51,26 +50,19 @@ private:
 	//  回城检测
 	void CheckBackForSupply();
 private:
+	// 无状态，自动选怪攻击状态，寻路到补给NPC，寻路到挂机点
+	enum WorkStatus{WS_None = 0, WS_Attack, WS_GoToDepotNPC, WS_GoToSupplyNPC, WS_GoToWorkPt};
+
 	// 当前角色对象
 	EntityRole m_role;
 
-	// HP/MP保护设置，百分比
-	DWORD m_protectHP;
-	DWORD m_protectMP;
-	// 挂机点和范围
-	POINT m_workPt;
-	DWORD m_workRange;
-	// 攻击方式索引
-	DWORD m_attackIndex;
-	// 挂机范围
+	// 挂机攻击的怪物坐标范围
 	RECT m_rcRange;
 	// 周围怪物的ID范围
 	DWORD m_minMonsterID;
 	DWORD m_maxMonsterID;
-	// 优先选最近的怪,false表示优先选挂机范围内最远的怪
-	bool m_bNearest;
-	// 优先使用的红和蓝药
-	CString m_szPriorHPDrug;
-	CString m_szPriorMPDrug;
+
+	// 当前状态
+	WorkStatus m_curStatus;
 };
 
