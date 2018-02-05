@@ -10,6 +10,7 @@
 #include "EntityPlayer.h"
 #include "Config.h"
 #include "BuyCountDlg.h"
+#include "EntityNPC.h"
 
 
 // CCDialg_Main 对话框
@@ -43,10 +44,12 @@ CCDialg_Main::CCDialg_Main(CWnd* pParent /*=NULL*/)
 	, m_nBuyCount(100)
 {
 	m_bWorking = false;
+	m_hGameWnd = NULL;
 }
 
 CCDialg_Main::~CCDialg_Main()
 {
+
 }
 
 void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
@@ -91,6 +94,8 @@ BEGIN_MESSAGE_MAP(CCDialg_Main, CDialog)
 	ON_COMMAND(ID_MODIFY, &CCDialg_Main::OnModifyBuyItem)
 	ON_COMMAND(ID_DELETE, &CCDialg_Main::OnDeleteBuyItem)
 	ON_LBN_DBLCLK(IDC_LIST1, &CCDialg_Main::OnDblclkListBuy)
+	ON_MESSAGE(RXJHMSG_LOADCONFIG, &CCDialg_Main::OnMsgLoadConfig)
+	ON_MESSAGE(RXJHMSG_REFRESHUI, &CCDialg_Main::OnMsgRefreshUI)
 END_MESSAGE_MAP()
 
 
@@ -160,19 +165,19 @@ void CCDialg_Main::OnBnClickedButton()
 	//OpenNPCTalk(0x15a3);
 	//return;
 	// TODO: 在此添加控件通知处理程序代码
+
 	if (!m_bWorking)
 	{
-		m_playHelper.Start();
-		SetTimer(TIMERID_ATTACK, 800, NULL);
 		m_btnWork.SetWindowTextA("停止挂机");
 	}
 	else
 	{
-		m_playHelper.Stop();
-		KillTimer(TIMERID_ATTACK);
 		m_btnWork.SetWindowTextA("开始挂机");
 	}
 	m_bWorking = !m_bWorking;
+	// 通知游戏线程开始挂机或停止挂机
+	NotifyMessage(RXJHMSG_AUTOWORK, m_bWorking ? 1 : 0);
+
 	//ActionCall(1);
 	//UseTheGoodsCall(GetGoodsIDforName("金创药(大)"));
 
@@ -189,11 +194,6 @@ void CCDialg_Main::OnBnClickedButton()
 BOOL CCDialg_Main::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
-	// 初始化地址数据
-	InitAddress();
-
-	//SetTimer(TIMERID_PROTECT, 200, NULL);
 	
 	// 初始控件数据
 	CString szShrotCut[10] = {" F1", " F2", " F3", " F4", " F5", " F6", " F7", " F8", " F9", " F10" };
@@ -228,7 +228,43 @@ BOOL CCDialg_Main::OnInitDialog()
 	m_comboMap.SetCurSel(0);
 	m_comboSupply.SetCurSel(0);
 
+	// 通知游戏线程，设置窗口已创建
+	NotifyMessage(RXJHMSG_INITIALIZE);
+
 	return TRUE;
+}
+
+void CCDialg_Main::SetGameWnd(HWND a_hwnd)
+{
+	m_hGameWnd = a_hwnd;
+}
+
+Config CCDialg_Main::GetConfigData()
+{
+	Config cfg;
+	m_cs.Lock();
+	cfg = m_cfg;
+	m_cs.Unlock();
+
+	return cfg;
+}
+
+void CCDialg_Main::LoadConfigByName(const CString& a_roleName)
+{
+	// 加载配置
+
+	// 通知更新并开始保护处理
+	NotifyMessage(RXJHMSG_UPDATE_SETTING, 1);
+}
+
+LRESULT CCDialg_Main::OnMsgLoadConfig(WPARAM a_wparam, LPARAM a_lparam)
+{
+	char* pName = (char*)a_wparam;
+	if (NULL != pName)
+	{
+		LoadConfigByName(pName);
+	}
+	return 1;
 }
 
 void CCDialg_Main::OnTimer(UINT_PTR nIDEvent)
@@ -237,6 +273,20 @@ void CCDialg_Main::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent == TIMERID_PROTECT)
 	{
 		UpdateData();
+
+		// 检测是否切换人物
+		if (m_hGameWnd)
+		{
+			CString szName = m_playHelper.GetRoleName();
+
+			char szPreName[64] = { 0 };
+			::GetWindowTextA(m_hGameWnd, szPreName, 64);
+			if (szPreName != szPreName)
+			{
+				OnClose();
+				return;
+			}
+		}
 
 		m_playHelper.Protect();
 		/*CString szMapName = m_playHelper.GetCurMap();
@@ -318,19 +368,33 @@ void CCDialg_Main::ProtectWork()
 	}
 }
 
+void CCDialg_Main::SetPoint(POINT a_pt)
+{
+	m_cs.Lock();
+	m_cfg.pt = a_pt;
+
+	m_nX = a_pt.x;
+	m_nY = a_pt.y;
+	m_cs.Unlock();
+
+	// 通知自己刷新界面
+	PostMessageA(RXJHMSG_REFRESHUI);
+	//UpdateData(FALSE);
+}
+
+LRESULT CCDialg_Main::OnMsgRefreshUI(WPARAM a_wparam, LPARAM a_lparam)
+{
+	UpdateData(FALSE);
+
+	return 1;
+}
+
 void CCDialg_Main::OnGetCurrentPoint()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	Config& cfg = Config::GetConfig();
-	// 挂机设置
-	POINT pt = m_playHelper.GetCurPoint();
-	cfg.pt = pt;
-	m_playHelper.UpdateConfig();
 
-	m_nX = pt.x;
-	m_nY = pt.y;
-	
-	UpdateData(FALSE);
+	NotifyMessage(RXJHMSG_GETPOINT);
+
 }
 
 
@@ -339,33 +403,39 @@ void CCDialg_Main::OnApplyConfig()
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData();
 	
-	Config& cfg = Config::GetConfig();
+	m_cs.Lock();
 	// 挂机设置
 	POINT pt = { m_nX, m_nY };
-	cfg.pt = pt;
-	m_comboMap.GetWindowTextA(cfg.szWorkMap);
+	m_cfg.pt = pt;
+	m_comboMap.GetWindowTextA(m_cfg.szWorkMap);
 	int sel = m_attackType.GetCurSel();
-	cfg.nAttackType = sel;
-	cfg.nAttackRange = m_nAttackRange;
-	cfg.bNearestPrior = m_bNearest;
+	m_cfg.nAttackType = sel;
+	m_cfg.nAttackRange = m_nAttackRange;
+	m_cfg.bNearestPrior = m_bNearest;
 	// 保护设置
-	cfg.nProtectHP = m_nProtectHP;
-	cfg.nProtentMP = m_nProtectMP;
-	m_HPList.GetWindowTextA(cfg.szPriorHPDrug);
-	m_MPList.GetWindowTextA(cfg.szPriorMPDrug);
+	m_cfg.nProtectHP = m_nProtectHP;
+	m_cfg.nProtentMP = m_nProtectMP;
+	m_HPList.GetWindowTextA(m_cfg.szPriorHPDrug);
+	m_MPList.GetWindowTextA(m_cfg.szPriorMPDrug);
 	// 回城设置
-	cfg.bCheckHPDrugs = m_bHPCounts;
-	cfg.nMinHPDrugs = m_nHPCounts;
-	cfg.bCheckMPDrugs = m_bMPCounts;
-	cfg.nMinMPDrugs = m_nMPCounts;
-	cfg.bCheckArrows = m_bArrows;
-	cfg.nMinArrows = m_nArrowCounts;
-	cfg.bCheckPackage = m_bPackageFull;
-	m_comboSupply.GetWindowTextA(cfg.szSupplyMap);
+	m_cfg.bCheckHPDrugs = m_bHPCounts;
+	m_cfg.nMinHPDrugs = m_nHPCounts;
+	m_cfg.bCheckMPDrugs = m_bMPCounts;
+	m_cfg.nMinMPDrugs = m_nMPCounts;
+	m_cfg.bCheckArrows = m_bArrows;
+	m_cfg.nMinArrows = m_nArrowCounts;
+	m_cfg.bCheckPackage = m_bPackageFull;
+	m_comboSupply.GetWindowTextA(m_cfg.szSupplyMap);
 
-	m_playHelper.UpdateConfig();
+	m_cs.Unlock();
+	// 通知游戏线程更新设置
+	NotifyMessage(RXJHMSG_UPDATE_SETTING);
 }
 
+void CCDialg_Main::NotifyMessage(UINT a_msg, WPARAM a_wparam, LPARAM a_lparam)
+{
+	::PostMessageA(m_hGameWnd, a_msg, a_wparam, a_lparam);
+}
 
 void CCDialg_Main::OnCbnDropdownHPList()
 {
@@ -377,6 +447,20 @@ void CCDialg_Main::OnCbnDropdownHPList()
 void CCDialg_Main::OnLoadConfig()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	UpdateData();
+
+	CString szGoods;
+	m_comboBuyList.GetWindowTextA(szGoods);
+	EntityNPC npc(0x15da);
+	npc.OpenTalk();
+	//::Sleep(2000);
+	npc.OpenShop();
+	npc.BuyGoodsByName(szGoods, m_nBuyCount);
+	//::Sleep(2000);
+	npc.CloseShop();
+	//::Sleep(2000);
+	npc.CloseTalk();
+	//npc.BuyGoodsByName(szGoods, m_nBuyCount);
 }
 
 

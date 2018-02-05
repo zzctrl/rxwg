@@ -74,6 +74,8 @@ void Package::UseGoods(DWORD a_index)
 		push edx
 		push 0x1
 		push 0x0
+		mov edx, GoodsBaseAddress
+		mov ecx, [edx]
 		mov ebx, GoodsUseCallAddress
 		call ebx
 	}

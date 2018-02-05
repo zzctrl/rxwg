@@ -3,6 +3,7 @@
 // 人物属性相关地址
 extern DWORD UserBaseAddress; // 人物属性基址
 extern DWORD UserNameOffset; // 名称偏移
+extern DWORD UserCareerOffset; // 人物职业偏移
 extern DWORD UserLevelOffset; // 等级偏移
 extern DWORD UserHPOffset; // 血量偏移
 extern DWORD UserMPOffset; // 蓝量偏移
@@ -33,7 +34,8 @@ extern DWORD GoodsUseCallAddress;// 使用背包物品call，参数为物品在�
 extern DWORD ShopBaseAddress; // 商店基址
 extern DWORD ShopBaseOffset; // 商店基本偏移值
 extern DWORD ShopItemIDOffset; // 商店物品ID偏移
-extern DWORD ShowItemNameOffset; // 商店物品名称偏移
+extern DWORD ShopItemNameOffset; // 商店物品名称偏移
+extern DWORD ShopCallAddress; // 商店购买call
 
 // 选中的怪物相关地址
 extern DWORD EntityBaseAddress;// 选中怪物ID基址
@@ -72,6 +74,6 @@ extern DWORD F1_F10_CallAddress;//快捷键call地址
 extern DWORD ActionBaseAddress; // 动作基址
 extern DWORD ActionCallAddress; // 动作call地址
 
-// 可以从本地配置文件中读取地址信息
-void InitAddress();
+
+
 

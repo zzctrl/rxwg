@@ -33,6 +33,22 @@ Config::~Config()
 {
 }
 
+// 清空数据
+void Config::ResetData()
+{
+
+}
+
+// 加载/保存配置数据
+bool Config::LoadConfig()
+{
+	return true;
+}
+bool Config::SaveConfig()
+{
+	return true;
+}
+
 Config& Config::GetConfig()
 {
 	static Config sInstance;

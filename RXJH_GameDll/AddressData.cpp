@@ -1,11 +1,26 @@
 ﻿#include "stdafx.h"
 #include "AddressData.h"
 
+// 可以从本地配置文件中读取地址信息
+class AddressData
+{
+public:
+	AddressData();
+	void InitAddress();
+};
 
-void InitAddress()
+AddressData g_addressData;
+
+AddressData::AddressData()
+{
+	InitAddress();
+}
+
+void AddressData::InitAddress()
 {
 	UserBaseAddress = 0x02AEBC38;
 	UserNameOffset = 0x0;
+	UserCareerOffset = 0x30;
 	UserLevelOffset = 0x34;
 	UserHPOffset = 0x80; 
 	UserMPOffset = 0x84; 
@@ -26,12 +41,13 @@ void InitAddress()
 	GoodsIDOffset = 0xD1C;
 	GoodsPropOffset = 0xD24;
 
-	GoodsUseCallAddress = 0x007FDC20;
+	GoodsUseCallAddress = 0x007FDC50;
 
 	ShopBaseAddress = 0x02D37CF4;
 	ShopBaseOffset = 0x410; 
 	ShopItemIDOffset = 0x4C; 
-	ShowItemNameOffset = 0x5C;
+	ShopItemNameOffset = 0x5C;
+	ShopCallAddress = 0x004E0220;
 
 
 	EntityBaseAddress = 0x02D36514;
@@ -60,7 +76,7 @@ void InitAddress()
 	EntityGoodsNameOffset = 0x94;
 
 
-	F1_F10_BaseAddress = 0x02D3670C;
+	F1_F10_BaseAddress = 0x02D11D40;
 	F1_F10_BaseOffestAddress = 0x410; 
 	F1_F10_CallAddress = 0x006E9020;
 
@@ -71,6 +87,7 @@ void InitAddress()
 // 人物属性相关地址
 DWORD UserBaseAddress; // 人物属性基址
 DWORD UserNameOffset; // 名称偏移
+DWORD UserCareerOffset; // 人物职业偏移
 DWORD UserLevelOffset; // 等级偏移
 DWORD UserHPOffset; // 血量偏移
 DWORD UserMPOffset; // 蓝量偏移
@@ -97,7 +114,8 @@ DWORD GoodsUseCallAddress;// 使用背包物品call，参数为物品在背包�
 DWORD ShopBaseAddress; // 商店基址
 DWORD ShopBaseOffset; // 商店基本偏移值
 DWORD ShopItemIDOffset; // 商店物品ID偏移
-DWORD ShowItemNameOffset; // 商店物品名称偏移
+DWORD ShopItemNameOffset; // 商店物品名称偏移
+DWORD ShopCallAddress; // 商店购买call
 
 						  // 选中的怪物相关地址
 DWORD EntityBaseAddress;// 选中怪物ID基址

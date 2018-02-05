@@ -10,6 +10,7 @@ PlayHelper::PlayHelper()
 	m_minMonsterID = 1;
 	m_maxMonsterID = 0x2710;
 	m_curStatus = WS_None;
+	m_attackRange = 0;
 }
 
 
@@ -17,28 +18,77 @@ PlayHelper::~PlayHelper()
 {
 }
 
-// 开始/停止挂机
+void PlayHelper::Initialize()
+{
+	// 初始化角色ID
+	DWORD dwRoleID = Read_RD(Read_RD(EntityBaseAddress) + 0xC);
+	m_role.SetID(dwRoleID);
+}
+
+bool PlayHelper::IsDataValid()
+{
+	DWORD dwNation = Read_RD(EntityBaseAddress);
+	return dwNation != 0;
+}
+
+
+
+#define INCODE_LEN		9
+void PlayHelper::ModifyAttackDistance(bool a_bModify)
+{
+	BYTE dwAttackDist = m_role.GetMaxAttackDist();
+	m_attackRange = dwAttackDist;
+	if (dwAttackDist > 0)
+	{
+		DWORD dwCodeAddr = 0x00506509;
+		BYTE oldCode[INCODE_LEN] = { 0x75, 0x07, 0xC7, 0x45, 0x0C, 0x05, 0x00, 0x00, 0x00 };
+		BYTE newCode[INCODE_LEN] = { 0x75, 0x00, 0xC7, 0x45, 0x0C, dwAttackDist, 0x00, 0x00, 0x00 };
+		DWORD oldProtect = 0;
+		BYTE* pCode = a_bModify ? newCode : oldCode;
+		// 修改原来的代码
+		::VirtualProtect((LPVOID)dwCodeAddr, INCODE_LEN, PAGE_EXECUTE_READWRITE, &oldProtect);
+		memcpy((LPVOID)dwCodeAddr, pCode, INCODE_LEN);
+		::VirtualProtect((LPVOID)dwCodeAddr, INCODE_LEN, oldProtect, &oldProtect);
+	}
+}
+
+char* PlayHelper::GetRoleName()
+{
+	return m_role.GetName();
+}
+
+// 开始/暂停挂机
 void PlayHelper::Start()
 {
 	m_curStatus = WS_Attack;
-	UpdateConfig();
+	UpdateConfig(m_config);
 }
-void PlayHelper::Stop()
+
+void PlayHelper::Pause()
 {
 	m_curStatus = WS_None;
 }
 
-void PlayHelper::UpdateConfig()
+void PlayHelper::Reset()
 {
-	Config& cfg = Config::GetConfig();
+	m_curStatus = WS_None;
+	m_role.SetID(EntityBase::ID_NULL);
+	m_config.ResetData();
+}
+
+void PlayHelper::UpdateConfig(const Config& a_config)
+{
+	m_config = a_config;
 	// 初始化挂机范围
-	m_rcRange.left = cfg.pt.x - cfg.nAttackRange;
-	m_rcRange.right = cfg.pt.x + cfg.nAttackRange;
-	m_rcRange.top = cfg.pt.y - cfg.nAttackRange;
-	m_rcRange.bottom = cfg.pt.y + cfg.nAttackRange;
+	m_rcRange.left = m_config.pt.x - m_config.nAttackRange;
+	m_rcRange.right = m_config.pt.x + m_config.nAttackRange;
+	m_rcRange.top = m_config.pt.y - m_config.nAttackRange;
+	m_rcRange.bottom = m_config.pt.y + m_config.nAttackRange;
 	// 初始话周围怪物的ID范围(最大，最小值)
 	InitMonterIDRange();
 }
+
+#define MOVETOPOINT		0xFFFE
 
 // 自动选怪，攻击
 void PlayHelper::AutoAttack()
@@ -57,7 +107,6 @@ void PlayHelper::AutoAttack()
 		}
 	}
 
-	const Config& cfg = Config::GetConfig();
 	if (EntityBase::ID_NULL != dwSelID)
 	{
 		// 类型为野怪
@@ -72,7 +121,7 @@ void PlayHelper::AutoAttack()
 			}
 			else
 			{
-				int nAttackIndex = cfg.nAttackType;
+				int nAttackIndex = m_config.nAttackType;
 				// 普攻或技能
 				if (0 == nAttackIndex)
 				{
@@ -88,8 +137,12 @@ void PlayHelper::AutoAttack()
 	}
 	else
 	{
-		// 没有野怪，则返回挂机点
-		m_role.WalkTo(cfg.pt);
+		if (MOVETOPOINT != dwSelID)
+		{
+			// 没有野怪，则返回挂机点
+			PointF pt = { m_config.pt.x, m_config.pt.y };
+			m_role.WalkTo(pt);
+		}
 	}
 }
 void PlayHelper::WalkToDepotNPC()
@@ -99,15 +152,14 @@ void PlayHelper::WalkToDepotNPC()
 // 移动到指定NPC处
 void PlayHelper::WalkToSupplyNPC()
 {
-	const Config& cfg = Config::GetConfig();
 	MapInfo info;
-	if (cfg.GetMapInfoByName(cfg.szSupplyMap, info))
+	if (m_config.GetMapInfoByName(m_config.szSupplyMap, info))
 	{
-		POINT curPt = m_role.GetPoint();
-		POINT& destPt = info.supplyPt;
+		PointF curPt = m_role.GetPoint();
+		PointF destPt = { info.supplyPt.x, info.supplyPt.y };
 		// 应该先判断当前是否是补给地图??
 		// 判断是否已经到达目的点
-		if (curPt.x == destPt.x && curPt.y == destPt.y)
+		if (IsNearPoint(curPt, destPt))
 		{
 			// 购买清单上的物品
 
@@ -123,14 +175,13 @@ void PlayHelper::WalkToSupplyNPC()
 // 移动到挂机点
 void PlayHelper::WalkToWorkPoint()
 {
-	const Config& cfg = Config::GetConfig();
 	MapInfo info;
-	if (cfg.GetMapInfoByName(cfg.szWorkMap, info))
+	if (m_config.GetMapInfoByName(m_config.szWorkMap, info))
 	{
-		POINT curPt = m_role.GetPoint();
-		const POINT& destPt = cfg.pt;
+		PointF curPt = m_role.GetPoint();
+		PointF destPt = { m_config.pt.x, m_config.pt.y };
 		// 判断是否已经到挂机点
-		if (curPt.x == destPt.x && curPt.y == destPt.y)
+		if (IsNearPoint(curPt, destPt))
 		{
 			// 开始自动选怪，攻击
 			m_curStatus = WS_Attack;
@@ -187,14 +238,19 @@ void PlayHelper::Protect()
 	}
 }
 
+void PlayHelper::SetWorkPoint(POINT a_pt)
+{
+	m_config.pt = a_pt;
+	UpdateConfig(m_config);
+}
+
 POINT PlayHelper::GetCurPoint()
 {
-	POINT pt = { 0 };
-	pt.x = Read_RD(Read_RD(CordinateBaseAddress) + CordinateXOffset);
-	pt.y = Read_RD(Read_RD(CordinateBaseAddress) + CordinateYOffset);
-	pt.y = 0 - pt.y;
-	return pt;
+	PointF pt = m_role.GetPoint();
+	POINT ret = { pt.x, pt.y };
+	return ret;
 }
+
 CString PlayHelper::GetCurMap()
 {
 	char* pMapName = Read_RS(Read_RD(MapBaseAddress) + MapNameOffset);
@@ -220,6 +276,17 @@ void PlayHelper::InitMonterIDRange()
 			}
 		}
 	}
+	// 适当增加ID检测范围
+	m_minMonsterID -= 100;
+	if (m_minMonsterID < 1)
+	{
+		m_minMonsterID = 1;
+	}
+	m_maxMonsterID += 100;
+	if (m_maxMonsterID > 0x2700)
+	{
+		m_maxMonsterID = 0x2700;
+	}
 }
 
 // 获取当前选中的ID
@@ -228,13 +295,24 @@ DWORD PlayHelper::GetCurSelID()
 	return Read_RD(Read_RD(EntityBaseAddress) + EntitySelOffset);
 }
 
+float CalcPointDist(PointF pt1, PointF pt2)
+{
+	int x = pt1.x - pt2.x;
+	int y = pt1.y - pt2.y;
+	double dist = x*x + y*y;
+	float ret = sqrt(dist);
+	return ret;
+}
+
 DWORD PlayHelper::CheckMonster()
 {
 	DWORD dwSelID = EntityBase::ID_NULL;
 	float dwDistion = 0.0f;
 	EntifyMonster monster;
-	Config& cfg = Config::GetConfig();
-	bool bNearest = cfg.bNearestPrior;
+
+	PointF rolePt = m_role.GetPoint();
+	PointF monsterPt = { 0.0f };
+	bool bNearest = m_config.bNearestPrior;
 	for (DWORD dwID = m_minMonsterID; dwID <= m_maxMonsterID; dwID++)
 	{
 		// 类型为野怪
@@ -244,37 +322,98 @@ DWORD PlayHelper::CheckMonster()
 			// 未死亡
 			if (!monster.IsDead())
 			{
-				// 怪物是否在挂机范围内
-				POINT pt = monster.GetPoint();
-				if (::PtInRect(&m_rcRange, pt))
+				// 怪物是否在挂机范围内或者距离在当前攻击范围内
+				PointF pt = monster.GetPoint();
+				POINT intPt = { pt.x, pt.y };
+				BOOL bInRange = ::PtInRect(&m_rcRange, intPt);
+
+				float dist = monster.GetDistance(); //距离有的不对，用自己算的
+				//float dist = CalcPointDist(pt, rolePt);
+				LogA("rxjh: in=%d, dist=%f, attack=%d, monsterpt=%f.%f, roltpt=%f.%f", bInRange, dist, (int)m_attackRange, \
+				pt.x, pt.y, rolePt.x, rolePt.y);
+				if (bInRange || dist < m_attackRange)
 				{
-					float dist = monster.GetDistance();
 					// 最近优先还是最远优先
 					if (bNearest)
 					{
-						if (dwDistion == 0.0f || dwDistion > dist)
+						if (0 == dwDistion || dwDistion > dist)
 						{
 							dwDistion = dist;
 							dwSelID = dwID;
+							monsterPt = pt;
 						}
 					}
 					else
 					{
-						if (dwDistion == 0.0f || dwDistion < dist)
+						if (0 == dwDistion || dwDistion < dist)
 						{
 							dwDistion = dist;
 							dwSelID = dwID;
+							monsterPt = pt;
 						}
 					}
 				}
 			}
 		}
 	}
+	// 距离是否大于攻击距离
+	LogA("rxjh: dist=%f, attack=%d", dwDistion, (int)m_attackRange);
+	if (bNearest && dwDistion  > m_attackRange)
+	{
+		// 往怪物方向走一段距离，再选怪攻击
+		PointF destPt = rolePt;
+		float dwNeedWalkDist = dwDistion - m_attackRange + 1;
+		if (monsterPt.x == rolePt.x)
+		{
+			if (monsterPt.y > rolePt.y)
+			{
+				destPt.y += dwNeedWalkDist;
+			}
+			else
+			{
+				destPt.y -= dwNeedWalkDist;
+			}
+		}
+		else
+		{
+			dwNeedWalkDist = dwNeedWalkDist * dwNeedWalkDist;
+			float k = (float)(monsterPt.y - rolePt.y) / (monsterPt.x - rolePt.x);
+			k = abs(k);
+			float temp = 1 + k*k;
+			float ret = (float)dwNeedWalkDist / temp;
+			float x = sqrt(ret);
+			float y = x * k;
+			if (monsterPt.x > rolePt.x)
+			{
+				destPt.x = (float)rolePt.x + x;
+			}
+			else
+			{
+				destPt.x = (float)rolePt.x - x;
+			}
+			if (monsterPt.y > rolePt.y)
+			{
+				destPt.y = (float)rolePt.y + y;
+			}
+			else
+			{
+				destPt.y = (float)rolePt.y - y;
+			}
+		}
+		// 移动
+		LogA("rxjh: star move... monsterpt=%f.%f destpt=%f.%f, rolept=%f.%f", monsterPt.x, monsterPt.y, \
+			destPt.x, destPt.y, rolePt.x, rolePt.y);
+		m_role.WalkTo(destPt);
+		return MOVETOPOINT;
+	}
 	// 选中怪物
 	if (EntityBase::ID_NULL != dwSelID)
 	{
 		monster.SetID(dwSelID);
 		monster.Select();
+
+		float di = monster.GetDistance();
+		LogA("rxjh: select dist=%f, mondist=%f, attack=%d", dwDistion, di, (int)m_attackRange);
 	}
 
 	return dwSelID;
@@ -282,28 +421,27 @@ DWORD PlayHelper::CheckMonster()
 
 void PlayHelper::CheckBackForSupply()
 {
-	Config& cfg = Config::GetConfig();
 	Package& package = m_role.GetPackage();
 	bool bNeedSupply = false;
 	do
 	{
-		if (cfg.bCheckHPDrugs)
+		if (m_config.bCheckHPDrugs)
 		{
-			if (package.GetAllHPDrugCount() < cfg.nMinHPDrugs)
+			if (package.GetAllHPDrugCount() < m_config.nMinHPDrugs)
 			{
 				bNeedSupply = true;
 				break;
 			}
 		}
-		if (cfg.bCheckMPDrugs)
+		if (m_config.bCheckMPDrugs)
 		{
-			if (package.GetAllMPDrugCount() < cfg.nMinMPDrugs)
+			if (package.GetAllMPDrugCount() < m_config.nMinMPDrugs)
 			{
 				bNeedSupply = true;
 				break;
 			}
 		}
-		if (cfg.bCheckPackage)
+		if (m_config.bCheckPackage)
 		{
 			if (package.IsPackageFull())
 			{
@@ -311,7 +449,7 @@ void PlayHelper::CheckBackForSupply()
 				break;
 			}
 		}
-		if (cfg.bCheckArrows)
+		if (m_config.bCheckArrows)
 		{
 			/*if (1)
 			{
@@ -325,7 +463,7 @@ void PlayHelper::CheckBackForSupply()
 	if (bNeedSupply)
 	{
 		MapInfo info;
-		if (cfg.GetMapInfoByName(cfg.szSupplyMap, info))
+		if (m_config.GetMapInfoByName(m_config.szSupplyMap, info))
 		{
 			m_curStatus = WS_GoToSupplyNPC;
 			// 判断是否有回城符
@@ -337,9 +475,10 @@ void PlayHelper::CheckBackForSupply()
 			else
 			{
 				// 如果补给地图跟挂机地图一样，则跑路回去
-				if (cfg.szSupplyMap == cfg.szWorkMap)
+				if (m_config.szSupplyMap == m_config.szWorkMap)
 				{
-					m_role.WalkTo(info.supplyPt);
+					PointF pt = { info.supplyPt.x, info.supplyPt.y };
+					m_role.WalkTo(pt);
 				}
 				else
 				{

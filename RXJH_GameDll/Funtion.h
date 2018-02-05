@@ -37,3 +37,10 @@ void FindWalk(float x,float y);
 // log
 void LogA(LPCSTR p_szFormat, ...);
 
+struct PointF
+{
+	float x;
+	float y;
+};
+
+bool IsNearPoint(PointF p1, PointF p2);

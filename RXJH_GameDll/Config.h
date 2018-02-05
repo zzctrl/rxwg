@@ -14,6 +14,15 @@ struct MapInfo
 class Config
 {
 public:
+	Config();
+	~Config();
+	// 清空数据
+	void ResetData();
+
+	// 加载/保存配置数据
+	bool LoadConfig();
+	bool SaveConfig();
+
 	static Config& GetConfig();
 
 	bool GetMapInfoByName(const CString& a_mapName, MapInfo& a_info) const;
@@ -49,8 +58,6 @@ public:
 	std::vector<CString> mpDrugs;
 
 	std::vector<MapInfo> maps;
-private:
-	Config();
-	~Config();
+
 };
 

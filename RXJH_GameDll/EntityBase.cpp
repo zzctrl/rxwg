@@ -86,7 +86,6 @@ void EntityBase::Select()
 	{
 		_asm
 		{
-			mov eax, esp
 			mov esi, dwNation
 			mov eax, [esi]
 			mov edx, [eax + 0x4]
@@ -99,7 +98,6 @@ void EntityBase::Select()
 			mov ecx, EntityBaseAddress
 			mov ecx, [ecx]
 			mov [ecx + 0x1a3c], eax
-			mov eax, esp
 		}
 	}
 }
@@ -115,8 +113,16 @@ int EntityBase::GetLevel()
 	return dwLevel;
 }
 
-CString EntityBase::GetName()
+char* EntityBase::GetName()
 {
 	char* pName = Read_RS(m_nation + EntityNameOffset);
 	return pName;
+}
+
+PointF EntityBase::GetPoint()
+{
+	PointF pt = { 0.0f };
+	pt.x = Read_RF(m_nation + EntityCordinateXOffset);
+	pt.y = Read_RF(m_nation + EntityCordinateYOffset);
+	return pt;
 }

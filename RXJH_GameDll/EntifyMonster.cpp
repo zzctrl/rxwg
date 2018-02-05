@@ -12,11 +12,11 @@ EntifyMonster::~EntifyMonster()
 {
 }
 
-POINT EntifyMonster::GetPoint()
+PointF EntifyMonster::GetPoint()
 {
 	float fx = Read_RF(m_nation + EntityCordinateXOffset);
 	float fy = Read_RF(m_nation + EntityCordinateYOffset);
-	POINT pt = { fx, fy };
+	PointF pt = { fx, fy };
 	return pt;
 }
 

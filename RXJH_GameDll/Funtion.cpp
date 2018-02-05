@@ -309,3 +309,15 @@ void LogA(LPCSTR p_szFormat, ...)
 
 	va_end(args);
 }
+
+bool IsNearPoint(PointF p1, PointF p2)
+{
+	float x = p1.x - p2.x;
+	float y = p1.y - p2.y;
+	double dist = x*x + y*y;
+	if (dist < 1.0)
+	{
+		return true;
+	}
+	return false;
+}

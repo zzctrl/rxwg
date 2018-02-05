@@ -12,7 +12,7 @@ public:
 	~EntifyMonster();
 
 	// 获取怪物坐标
-	POINT GetPoint();
+	PointF GetPoint();
 	// 获取怪物与角色的距离
 	float GetDistance();
 	// 是否死亡

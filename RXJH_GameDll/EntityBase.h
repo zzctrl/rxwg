@@ -7,6 +7,8 @@
 热血对象基类
 */
 
+
+
 // 对象类型：怪物，NPC，物品，玩家
 enum EntityType { ET_NULL = 0, ET_Monster, ET_NPC, ET_Goods, ET_Player };
 
@@ -31,7 +33,9 @@ public:
 	DWORD GetNation();
 
 	// 获取对象名称
-	CString GetName();
+	virtual char* GetName();
+	// 获取坐标
+	virtual PointF GetPoint();
 
 	// 选中(或取消选中)当前对象
 	virtual void Select();

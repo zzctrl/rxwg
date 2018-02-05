@@ -2,6 +2,7 @@
 人物基本属性
 
 角色名称：0x02AEBC38  （pre:0x02F860F0）
+职业：+0x30 1：刀，2：剑，3：枪，4：弓，5：医，B：刺客，C：乐师，10：格斗家，D：韩飞官，E:谭花灵，11：梅柳真，12:卢风郎
 当前等级：+0x34  BYTE类型
 当前HP：+0x80 
 当前MP：+0x84
@@ -9,6 +10,44 @@
 最大MP: +0x90
 当前经验：+0x98
 最大经验：+0xA0
+
+判断攻击距离：
+00506506 - 83 F8 03              - cmp eax,03 { 3 }
+00506509 - 75 07                 - jne 00506512
+0050650B - C7 45 0C 05000000     - mov [ebp+0C],00000005 { 5 }
+00506512 - D9 45 08              - fld dword ptr [ebp+08]
+00506515 - DB 45 0C              - fild dword ptr [ebp+0C]
+00506518 - DED9                  - fcompp 
+0050651A - DFE0                  - fnstsw ax
+0050651C - F6 C4 01              - test ah,01 { 1 }
+0050651F - 75 0D                 - jne 0050652E
+00506521 - 5E                    - pop esi
+00506522 - B8 01000000           - mov eax,00000001 { 1 }
+00506527 - 5F                    - pop edi
+00506528 - 8B E5                 - mov esp,ebp
+0050652A - 5D                    - pop ebp
+0050652B - C2 0800               - ret 0008 { 8 }
+0050652E - 5E                    - pop esi
+0050652F - 33 C0                 - xor eax,eax
+00506531 - 5F                    - pop edi
+00506532 - 8B E5                 - mov esp,ebp
+00506534 - 5D                    - pop ebp
+00506535 - C2 0800               - ret 0008 { 8 }
+
+jne 00506512
+
+刀，剑能修改的最大攻击距离可以设置到38(0x26)
+梅柳真本身攻击距离为70,修改后最大可到90(0x5a)
+医生本身攻击距离为70,修改后最大可到90(0x5a)
+弓手本身攻击距离为73，修改后最大可到228(0xe4)
+
+
+00506509 - 75 07                 - jne 00506512
+0050650B - C7 45 0C 05000000     - mov [ebp+0C],00000005 { 5 }
+修改代码为：
+00506509 - 75 00                 - jne 0050650B
+0050650B - C7 45 0C 5A000000     - mov [ebp+0C],000005A
+
 
 =====================================
 背包基址：02D105DC
@@ -23,7 +62,7 @@
 
 =====================================
 // 使用背包物品的call
-#define EatGoodsAddress		0x007FDC20
+#define EatGoodsAddress		0x007FDC50
 
 void EatGoods()
 {
@@ -34,10 +73,23 @@ void EatGoods()
 		push edx
 		push 0x1
 		push 0x0
+		mov ecx, [02D105DC]
 		mov ebx, EatGoodsAddress
 		call ebx
 	}
 }
+00818EE2 - 53                    - push ebx
+00818EE3 - 51                    - push ecx
+00818EE4 - 50                    - push eax
+00818EE5 - 8B CF                 - mov ecx,edi
+00818EE7 - E8 644DFEFF           - call 007FDC50
+示例代码：
+push 1
+push 1
+push 0
+mov edx, 0x02D105DC
+mov ecx, [edx]
+call 0x007FDC50
 
 =======================================
 
@@ -77,6 +129,64 @@ EIP=007FFE27
 物品ID: [物品地址 + 4C]
 物品名称: [物品地址 + 5C]
 
+购买药品call:
+0080DD2E    8983 2C170000   MOV DWORD PTR DS:[EBX+0x172C],EAX
+0080DD34    8993 30170000   MOV DWORD PTR DS:[EBX+0x1730],EDX
+0080DD3A    C785 EAD7FFFF 9>MOV DWORD PTR SS:[EBP-0x2816],Client.008>
+0080DD44    8DB3 1C170000   LEA ESI,DWORD PTR DS:[EBX+0x171C]
+0080DD4A    B9 22000000     MOV ECX,0x22
+0080DD4F    8DBD EED7FFFF   LEA EDI,DWORD PTR SS:[EBP-0x2812]
+0080DD55    F3:A5           REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS>
+0080DD57    8B0D 60770901   MOV ECX,DWORD PTR DS:[0x1097760]
+0080DD5D    68 8E000000     PUSH 0x8E
+0080DD62    8D85 E8D7FFFF   LEA EAX,DWORD PTR SS:[EBP-0x2818]
+0080DD68    50              PUSH EAX
+0080DD69    C785 EED7FFFF 0>MOV DWORD PTR SS:[EBP-0x2812],0x1
+0080DD73    E8 A824CDFF     CALL Client.004E0220
+
+==================================================
+快捷栏基址：[02D11D40]
+F1-F10 1-0每个格的地址base：[[02D11D40] + index * 4 + 410]  (索引从0-19)
+技能：
+分类，0为物品，2为技能：[base + 48]
+技能所属级别或ID？：[base + 4C]
+技能名称：[base + 5C]
+描述：[base + F1](药品和绝命技有描述，其他技能为空)
+技能ID？：[base + 1F8]
+技能类型？1为红药，4为攻击武功，5为辅助武功：[base + 230]
+
+
+call的esi=[[0109C1C0]+4]
+006F5F22 - 50                    - push eax
+006F5F23 - 8B CE                 - mov ecx,esi
+006F5F25 - E8 F630FFFF           - call 006E9020
+
+
+
+006E90EE - 8B 0D A88C0C01        - mov ecx,[010C8CA8] : [0A1059B8]
+006E90F4 - 89 99 28020000        - mov [ecx+00000228],ebx
+006E90FA - 8B 15 A88C0C01        - mov edx,[010C8CA8] : [0A1059B8]
+006E9100 - 88 9A 30020000        - mov [edx+00000230],bl
+006E9106 - A1 A88C0C01           - mov eax,[010C8CA8] : [0A1059B8]
+006E910B - 83 CB FF              - or ebx,-01
+006E910E - 89 98 2C020000        - mov [eax+0000022C],ebx
+006E9114 - 8B 0D 401DD102        - mov ecx,[02D11D40] : [2116E6B8]
+006E911A - 83 BC B1 10040000 00  - cmp dword ptr [ecx+esi*4+00000410],00
+006E9122 - 0F84 CC050000         - je 006E96F4
+006E9128 - 8B 94 B1 10040000     - mov edx,[ecx+esi*4+00000410]
+006E912F - 83 BA F8010000 00     - cmp dword ptr [edx+000001F8],00
+
+技能列表：
+基址: [[02D11D9C] + ebx*4 + 0x410] // ebx索引从1开始
+ID: [基址 + 4C]
+等级：[基址 + AC]
+名称（如刀的疾风断木）：[基址 + 5C]
+是否已学：[基址 + 1F6] 2字节
+ID: [基址 + 1F8]
+武功所属名称（如刀的疾风刀法）: [基址 + 228]
+
+
+鼠标当前拖放的技能基址：[[010C8CA8] + 0x228]
 
 =================================================
 //人物动作call，EBX是动作的索引
@@ -110,12 +220,15 @@ client.exe: 0x400000
 血量：属性 + 0x5F4
 等级：属性 + 0x5F8
 绝命技能：属性 + 0x3C8
+X坐标：属性 + 0x1060
+y坐标：属性 + 0x1068
 
 物品分类ID：属性 + 0x78
 物品名称：属性 + 0x94
 
 =========================================
 选怪或者NPC的call：
+                    push 0
 Client.exe+1284A7 - mov eax,[esi]
 Client.exe+1284A9 - mov edx,[eax+04]
 Client.exe+1284AC - push 01 { 1 }
@@ -196,6 +309,28 @@ push 0x401
 call eax
 
 =====================
+ESI来源：
+004DFB85 - 57                    - push edi
+004DFB86 - B9 F8BE0901           - mov ecx,0109BEF8 { [00A7482C] }
+004DFB8B - E8 60020000           - call 004DFDF0
+004DFB90 - 8B F0                 - mov esi,eax
+
+
+004DFDF0 - 55                    - push ebp         《==
+004DFDF1 - 8B EC                 - mov ebp,esp
+004DFDF3 - 8B 45 08              - mov eax,[ebp+08]
+004DFDF6 - 85 C0                 - test eax,eax
+004DFDF8 - 79 0D                 - jns 004DFE07
+004DFDFA - 3D 00190000           - cmp eax,00001900 { 6400 }
+004DFDFF - 7C 06                 - jl 004DFE07
+004DFE01 - 33 C0                 - xor eax,eax
+004DFE03 - 5D                    - pop ebp
+004DFE04 - C2 0400               - ret 0004 { 4 }
+004DFE07 - 8B 44 81 04           - mov eax,[ecx+eax*4+04]
+004DFE0B - 5D                    - pop ebp
+004DFE0C - C2 0400               - ret 0004 { 4 }
+[0109BEF8 + eax*4 + 4]
+ESI来源见上边：
 OPEN买卖 esi:2128F568 2128F970   CLOSE买卖 esi:21293DF8  closetalk esi:2128F160
      eax:3E9	  5B               eax:5B                          eax:5A
 打开NPC买卖对话框：
@@ -217,23 +352,35 @@ ecx: 0x24DDE440=[28C69260+04]
 
 =================================================================
 打开/关闭商店，结束对话：
-007C2BE0 - 8B 4E 04              - mov ecx,[esi+04]
-007C2BE7 - 8B 86 54020000        - mov eax,[esi+00000254]
-007C2BED - 8B 11                 - mov edx,[ecx]
-007C2BEF - 8B 52 04              - mov edx,[edx+04]
-007C2BF2 - 6A 00                 - push 00 { 0 }
-007C2BF4 - 50                    - push eax
-007C2BF5 - 68 F4030000           - push 000003F4 { 1012 }
-007C2BFA - FF D2                 - call edx
+007C2C10 - 8B 4E 04              - mov ecx,[esi+04]
+007C2C13 - 85 C9                 - test ecx,ecx
+007C2C15 - 74 15                 - je 007C2C2C
+007C2C17 - 8B 86 54020000        - mov eax,[esi+00000254]
+007C2C1D - 8B 11                 - mov edx,[ecx]
+007C2C1F - 8B 52 04              - mov edx,[edx+04]
+007C2C22 - 6A 00                 - push 00 { 0 }
+007C2C24 - 50                    - push eax
+007C2C25 - 68 F4030000           - push 000003F4 { 1012 }
+007C2C2A - FF D2                 - call edx
 
+
+所有基址：10C8CB8
 打开商店基址：
 esi:[[0109CF5C]+4]
+第二个选项卡：esi:[[0109CF60]+4]
+
+0x109BEF8 + index*4 + 4
 
 关闭商店基址：
 esi:[[0109CFB8]+4]
 
 结束对话基址：
 ESI=[[0109CF50]+4]
+
+商店选项卡是否显示：
+[[eax + 0x338] + 40]
+商店买卖窗口是否打开：
+[[eax + 0x348] + 40]
 
 
 mov eax, 0x109BEF8
@@ -248,6 +395,8 @@ push 0
 push eax
 push 0x3F4
 call edx
+====================================
+
 
 
 

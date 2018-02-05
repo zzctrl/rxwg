@@ -5,6 +5,7 @@
 EntityPlayer::EntityPlayer(DWORD a_id)
 :EntityBase(a_id)
 {
+	
 }
 
 
@@ -25,6 +26,38 @@ EntityRole::~EntityRole()
 
 }
 
+char* EntityRole::GetName()
+{
+	char* pName = Read_RS(m_nation + 0x18);
+	return pName;
+}
+
+BYTE EntityRole::GetMaxAttackDist()
+{
+	DWORD dwCareer = Read_RD(UserBaseAddress + UserCareerOffset);
+	switch (dwCareer)
+	{
+	case Career_Dao:
+	case Career_Jian:
+	case Career_Qiang:
+	case Career_Ci:
+	case Career_Han:
+	case Career_Tan:
+	case Career_Quan:
+	case Career_Lu:
+		return 38;
+	case Career_Yi:
+	case Career_Qin:
+	case Career_Mei:
+		return 90;
+	case Career_Gong:
+		return 228;
+	default:
+		break;
+	}
+	return 0;
+}
+
 Package& EntityRole::GetPackage()
 {
 	return m_package;
@@ -43,12 +76,11 @@ DWORD EntityRole::GetCurrentMP()
 }
 
 // 获取角色当前坐标
-POINT EntityRole::GetPoint()
+PointF EntityRole::GetPoint()
 {
-	POINT pt = { 0 };
-	pt.x = Read_RD(Read_RD(CordinateBaseAddress) + CordinateXOffset);
-	pt.y = Read_RD(Read_RD(CordinateBaseAddress) + CordinateYOffset);
-	pt.y = 0 - pt.y;
+	PointF pt = { 0.0f };
+	pt.x = Read_RF(m_nation + 0x1C40);
+	pt.y = Read_RF(m_nation + 0x1C48);
 	return pt;
 }
 
@@ -62,8 +94,8 @@ bool EntityRole::CheckWalkStatus()
 {
 	if (m_bWalking)
 	{
-		POINT pt = GetPoint();
-		if (pt.x == m_destPt.x && pt.y == m_destPt.y)
+		PointF pt = GetPoint();
+		if (IsNearPoint(pt, m_destPt))
 		{
 			m_bWalking = false;
 		}
@@ -71,7 +103,7 @@ bool EntityRole::CheckWalkStatus()
 	return m_bWalking;
 }
 // 寻路到指定坐标
-void EntityRole::WalkTo(POINT a_pt)
+void EntityRole::WalkTo(PointF a_pt)
 {
 	m_bWalking = true;
 	m_destPt = a_pt;
@@ -130,7 +162,8 @@ void EntityRole::DoAction(Action a_index)
 void EntityRole::UseShortcutF1_F10(ShortCut a_index)
 {
 	int index = a_index;
-	DWORD dwNation = Read_RD(F1_F10_BaseAddress);
+	DWORD CallBaseAddress = 0x010C8CB8;
+	DWORD dwNation = Read_RD(Read_RD(CallBaseAddress) + 0x27C);
 	if (0x0 != dwNation)
 	{
 		_asm

@@ -4,6 +4,7 @@
     <CheatEntry>
       <ID>0</ID>
       <Description>"人物属性基址"</Description>
+      <LastState Value="696D7A7A" RealAddress="02AEBC38"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02AEBC38</Address>
@@ -11,36 +12,42 @@
     <CheatEntry>
       <ID>1</ID>
       <Description>"等级"</Description>
+      <LastState Value="45" RealAddress="02AEBC6C"/>
       <VariableType>Byte</VariableType>
       <Address>02AEBC38+34</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>2</ID>
       <Description>"HP"</Description>
+      <LastState Value="885" RealAddress="02AEBCB8"/>
       <VariableType>4 Bytes</VariableType>
       <Address>02AEBC38+80</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>3</ID>
       <Description>"MP"</Description>
+      <LastState Value="354" RealAddress="02AEBCBC"/>
       <VariableType>4 Bytes</VariableType>
       <Address>02AEBC38+84</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>4</ID>
       <Description>"MaxHP"</Description>
+      <LastState Value="885" RealAddress="02AEBCC4"/>
       <VariableType>4 Bytes</VariableType>
       <Address>02AEBC38+8C</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>5</ID>
       <Description>"MaxMP"</Description>
+      <LastState Value="354" RealAddress="02AEBCC8"/>
       <VariableType>4 Bytes</VariableType>
       <Address>02AEBC38+90</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>6</ID>
       <Description>"X坐标"</Description>
+      <LastState Value="741" RealAddress="21574994"/>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37970</Address>
       <Offsets>
@@ -50,6 +57,7 @@
     <CheatEntry>
       <ID>7</ID>
       <Description>"Y坐标（取反）"</Description>
+      <LastState Value="FFFFF857" RealAddress="21574998"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37970</Address>
@@ -60,6 +68,7 @@
     <CheatEntry>
       <ID>8</ID>
       <Description>"背包基址"</Description>
+      <LastState Value="213AF020" RealAddress="02D105DC"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D105DC</Address>
@@ -67,6 +76,7 @@
     <CheatEntry>
       <ID>9</ID>
       <Description>"第一格地址"</Description>
+      <LastState Value="355FB830" RealAddress="213AF430"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D105DC</Address>
@@ -77,6 +87,7 @@
     <CheatEntry>
       <ID>10</ID>
       <Description>"第一格物品名称"</Description>
+      <LastState Value="FF FF FF FF E3 51 02 39 83 81" RealAddress="2FB6BC04"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>Array of byte</VariableType>
       <ByteLength>10</ByteLength>
@@ -85,12 +96,14 @@
     <CheatEntry>
       <ID>11</ID>
       <Description>"第一格物品数量"</Description>
+      <LastState Value="4018208597" RealAddress="2FB6C7EC"/>
       <VariableType>4 Bytes</VariableType>
       <Address>2FB6BBA8+C44</Address>
     </CheatEntry>
     <CheatEntry>
       <ID>12</ID>
       <Description>"选中怪物ID"</Description>
+      <LastState Value="000015DA" RealAddress="35666C9C"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D36514</Address>
@@ -101,6 +114,7 @@
     <CheatEntry>
       <ID>13</ID>
       <Description>"选中怪物基址"</Description>
+      <LastState Value="00A98FA8" RealAddress="33EF6868"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D36518+1544*4</Address>
@@ -111,6 +125,7 @@
     <CheatEntry>
       <ID>14</ID>
       <Description>"人物动作基址"</Description>
+      <LastState Value="26BC8730" RealAddress="02D10B90"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>Client.exe+2910B90</Address>
@@ -136,6 +151,7 @@
     <CheatEntry>
       <ID>24</ID>
       <Description>"无描述"</Description>
+      <LastState Value="34B882C8" RealAddress="02D3BBA0"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D36518+15A2*4</Address>
@@ -150,6 +166,7 @@
     <CheatEntry>
       <ID>26</ID>
       <Description>"鼠标hover的对象ID"</Description>
+      <LastState Value="0000FFFF" RealAddress="00FAEE94"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>FAEE94</Address>
@@ -157,6 +174,7 @@
     <CheatEntry>
       <ID>27</ID>
       <Description>"无描述"</Description>
+      <LastState Value="00000000" RealAddress="21517730"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37D5C</Address>
@@ -167,6 +185,7 @@
     <CheatEntry>
       <ID>28</ID>
       <Description>"无描述"</Description>
+      <LastState Value="215173F8" RealAddress="02D37D5C"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37D5C</Address>
@@ -174,6 +193,7 @@
     <CheatEntry>
       <ID>30</ID>
       <Description>"打开NPC对话基址"</Description>
+      <LastState Value="21547450" RealAddress="20A56B20"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37C7C</Address>
@@ -184,6 +204,7 @@
     <CheatEntry>
       <ID>31</ID>
       <Description>"是否打开NPC对话"</Description>
+      <LastState Value="20A567E8" RealAddress="02D37C7C"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37C7C</Address>
@@ -191,6 +212,7 @@
     <CheatEntry>
       <ID>33</ID>
       <Description>"无描述"</Description>
+      <LastState Value="21512F70" RealAddress="02D37CB4"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37CB4</Address>
@@ -198,6 +220,7 @@
     <CheatEntry>
       <ID>34</ID>
       <Description>"无描述"</Description>
+      <LastState Value="21512B68" RealAddress="02D37C9C"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02D37C9C</Address>
@@ -205,6 +228,7 @@
     <CheatEntry>
       <ID>35</ID>
       <Description>"无描述"</Description>
+      <LastState Value="00000001" RealAddress="0F532358"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>0F532358</Address>
@@ -212,6 +236,7 @@
     <CheatEntry>
       <ID>46</ID>
       <Description>"关闭商店ESI"</Description>
+      <LastState Value="FF0E344D" RealAddress="295F9144"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>295F9140+4</Address>
@@ -219,6 +244,7 @@
     <CheatEntry>
       <ID>47</ID>
       <Description>"关闭商店常量基址"</Description>
+      <LastState Value="06CF3DD0" RealAddress="0109CFB8"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>Client.exe+C9CFB8</Address>
@@ -226,6 +252,7 @@
     <CheatEntry>
       <ID>52</ID>
       <Description>"结束对话常量基址"</Description>
+      <LastState Value="06CF3240" RealAddress="0109CF50"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>Client.exe+C9CF50</Address>
@@ -233,6 +260,7 @@
     <CheatEntry>
       <ID>53</ID>
       <Description>"打开商店常量基址"</Description>
+      <LastState Value="06CF33D0" RealAddress="0109CF5C"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>Client.exe+C9CF5C</Address>
@@ -240,6 +268,7 @@
     <CheatEntry>
       <ID>54</ID>
       <Description>"无描述"</Description>
+      <LastState Value="0000058B" RealAddress="02D36508"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02d36508</Address>
@@ -247,12 +276,28 @@
     <CheatEntry>
       <ID>55</ID>
       <Description>"无描述"</Description>
+      <LastState Value="0000154E" RealAddress="3566526C"/>
       <ShowAsHex>1</ShowAsHex>
       <VariableType>4 Bytes</VariableType>
       <Address>02d36514</Address>
       <Offsets>
         <Offset>C</Offset>
       </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>58</ID>
+      <Description>"npc对话选项是否打开"</Description>
+      <LastState Value="0" RealAddress="21547490"/>
+      <VariableType>4 Bytes</VariableType>
+      <Address>21547490</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>60</ID>
+      <Description>"No description"</Description>
+      <LastState Value="21547450" RealAddress="20A56B20"/>
+      <ShowAsHex>1</ShowAsHex>
+      <VariableType>4 Bytes</VariableType>
+      <Address>20A567E8+338</Address>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>
