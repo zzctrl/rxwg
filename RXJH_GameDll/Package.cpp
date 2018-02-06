@@ -43,7 +43,6 @@ DWORD Package::GetGoodsCount(const CString& a_goodsName)
 			break;
 		}
 	}
-	LogA("rxjh: goodsname=%s, count=%d", (const char*)a_goodsName, (int)dwCount);
 	return dwCount;
 }
 // 获取物品的索引，如果物品不存在返回-1
@@ -105,15 +104,14 @@ bool Package::IsPackageFull()
 }
 
 // 统计背包里所有红/蓝药数量
-DWORD Package::GetAllHPDrugCount()
+DWORD Package::GetAllHPDrugCount(const std::vector<CString>& a_hpDrugs)
 {
-	int count = CountGoodsArray(Config::GetConfig().hpDrugs);
-	LogA("rxjh: GetAllHPDrugCount=%d", count);
+	int count = CountGoodsArray(a_hpDrugs);
 	return count;
 }
-DWORD Package::GetAllMPDrugCount()
+DWORD Package::GetAllMPDrugCount(const std::vector<CString>& a_mpDrugs)
 {
-	int count = CountGoodsArray(Config::GetConfig().mpDrugs);
+	int count = CountGoodsArray(a_mpDrugs);
 	return count;
 }
 

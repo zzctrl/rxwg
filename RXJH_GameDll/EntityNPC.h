@@ -9,6 +9,7 @@ class EntityNPC : public EntityBase
 {
 public:
 	EntityNPC(DWORD a_id = ID_NULL);
+	EntityNPC(const CString& a_name);
 	~EntityNPC();
 
 	// 打开/关闭NPC
@@ -19,6 +20,9 @@ public:
 	void OpenShop();
 	// 关闭商店
 	void CloseShop();
+
+	// 关闭仓库
+	void CloseDepot();
 
 	// 购买物品名称，数量
 	bool BuyGoodsByName(const CString& a_name, DWORD a_count);

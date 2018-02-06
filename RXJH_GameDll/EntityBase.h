@@ -29,6 +29,9 @@ public:
 	DWORD GetID();
 	EntityType GetType();
 
+	// 对象是否有效对象
+	bool IsValid();
+
 	// 获取对象地址
 	DWORD GetNation();
 

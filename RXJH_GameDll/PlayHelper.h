@@ -47,8 +47,12 @@ private:
 	void AutoAttack();
 	// 移动到仓库NPC处
 	void WalkToDepotNPC();
+	// 存取物品
+	void StoreGoods();
 	// 移动到补给NPC处
 	void WalkToSupplyNPC();
+	// 买卖物品
+	void BuySellGoods();
 	// 移动到挂机点
 	void WalkToWorkPoint();
 
@@ -65,8 +69,8 @@ private:
 	//  回城检测
 	void CheckBackForSupply();
 private:
-	// 无状态，自动选怪攻击状态，寻路到补给NPC，寻路到挂机点
-	enum WorkStatus{WS_None = 0, WS_Attack, WS_GoToDepotNPC, WS_GoToSupplyNPC, WS_GoToWorkPt};
+	// 无状态，自动选怪攻击状态，到仓库，存取物品，到补给NPC，买卖物品，到挂机点
+	enum WorkStatus{WS_None = 0, WS_Attack, WS_GoToDepotNPC, WS_Store, WS_GoToSupplyNPC, WS_BuySellGoods, WS_GoToWorkPt};
 
 	// 设置
 	Config m_config;

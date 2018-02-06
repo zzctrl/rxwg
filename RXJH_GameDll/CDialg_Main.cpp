@@ -204,15 +204,14 @@ BOOL CCDialg_Main::OnInitDialog()
 	}
 	m_attackType.SetCurSel(0);
 
-	Config& cfg = Config::GetConfig();
-	for (auto& item : cfg.hpDrugs)
+	for (auto& item : m_cfg.hpDrugs)
 	{
 		m_HPList.AddString(item);
 		m_comboBuyList.AddString(item);
 	}
 	m_HPList.SetCurSel(5);
 
-	for (auto& item : cfg.mpDrugs)
+	for (auto& item : m_cfg.mpDrugs)
 	{
 		m_MPList.AddString(item);
 		m_comboBuyList.AddString(item);
@@ -220,7 +219,7 @@ BOOL CCDialg_Main::OnInitDialog()
 	m_MPList.SetCurSel(3);
 	m_comboBuyList.SetCurSel(0);
 
-	for (auto& item : cfg.maps)
+	for (auto& item : m_cfg.maps)
 	{
 		m_comboMap.AddString(item.szName);
 		m_comboSupply.AddString(item.szName);
@@ -478,8 +477,7 @@ void CCDialg_Main::OnAddBuyGoods()
 	int nCount = m_listBuys.AddString(szItem);
 	m_listBuys.SetItemData(nCount, (DWORD_PTR)pData);
 
-	Config& cfg = Config::GetConfig();
-	cfg.buys[szBuy] = m_nBuyCount;
+	m_cfg.buys[szBuy] = m_nBuyCount;
 }
 
 
@@ -492,8 +490,7 @@ void CCDialg_Main::OnModifyBuyItem()
 		CString* pData = (CString*)m_listBuys.GetItemData(nSel);
 		if (pData)
 		{
-			Config& cfg = Config::GetConfig();
-			auto iter = cfg.buys.find(*pData);
+			auto iter = m_cfg.buys.find(*pData);
 			int nBuy = iter->second;
 			CBuyCountDlg dlg(nBuy);
 			dlg.DoModal();
@@ -507,7 +504,7 @@ void CCDialg_Main::OnModifyBuyItem()
 				m_listBuys.InsertString(nSel, szItem);
 				m_listBuys.SetItemData(nSel, (DWORD_PTR)pData);
 
-				cfg.buys[*pData] = nNewBuy;
+				m_cfg.buys[*pData] = nNewBuy;
 			}
 		}
 	}
@@ -535,8 +532,7 @@ void CCDialg_Main::OnDeleteBuyItem()
 		//删除listbox 中的记录
 		m_listBuys.DeleteString(nSel);
 
-		Config& cfg = Config::GetConfig();
-		cfg.buys.erase(szName);
+		m_cfg.buys.erase(szName);
 	}
 }
 

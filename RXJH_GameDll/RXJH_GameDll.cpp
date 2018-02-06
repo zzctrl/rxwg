@@ -260,7 +260,7 @@ void CRXJH_GameDllApp::OnMsgAutoWork(bool a_bWork)
 	if (a_bWork)
 	{
 		m_playHelper.Start();
-		::SetTimer(m_hGameWnd, TIMERID_WORK, 600, NULL);
+		::SetTimer(m_hGameWnd, TIMERID_WORK, 400, NULL);
 	}
 	else
 	{

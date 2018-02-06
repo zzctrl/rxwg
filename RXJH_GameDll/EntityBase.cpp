@@ -68,6 +68,11 @@ DWORD EntityBase::GetID()
 	return m_id;
 }
 
+bool EntityBase::IsValid()
+{
+	return m_id != ID_NULL;
+}
+
 EntityType EntityBase::GetType()
 {
 	return m_type;

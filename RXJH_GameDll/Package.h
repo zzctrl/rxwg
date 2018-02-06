@@ -22,8 +22,8 @@ public:
 	void UseGoods(const CString& a_goodsName);
 
 	// 统计背包里所有红/蓝药数量
-	DWORD GetAllHPDrugCount();
-	DWORD GetAllMPDrugCount();
+	DWORD GetAllHPDrugCount(const std::vector<CString>& a_hpDrugs);
+	DWORD GetAllMPDrugCount(const std::vector<CString>& a_mpDrugs);
 
 	// 背包是否已满
 	bool IsPackageFull();

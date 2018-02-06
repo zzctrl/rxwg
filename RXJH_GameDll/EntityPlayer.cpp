@@ -16,10 +16,14 @@ EntityPlayer::~EntityPlayer()
 
 
 
-EntityRole::EntityRole(DWORD a_id)
+EntityRole::EntityRole(Config& a_config, DWORD a_id)
 :EntityBase(a_id)
+,m_config(a_config)
 {
 	m_bWalking = false;
+	m_npcOper = Oper_Store;
+	m_npcOperStatus = BS_OpenTalk;
+	m_nextOperationTime = 0;
 }
 EntityRole::~EntityRole()
 {
@@ -82,6 +86,123 @@ PointF EntityRole::GetPoint()
 	pt.x = Read_RF(m_nation + 0x1C40);
 	pt.y = Read_RF(m_nation + 0x1C48);
 	return pt;
+}
+
+void EntityRole::SetDepotNPC(const EntityNPC& a_npc)
+{
+	m_npc = a_npc;
+	m_npcOper = Oper_Store;
+	m_nextOperationTime = ::GetTickCount();
+}
+bool EntityRole::StoreGoods()
+{
+	return DoNpcOperation(Oper_Store);
+}
+
+void EntityRole::SetBuyNPC(const EntityNPC& a_npc)
+{
+	m_npc = a_npc;
+	m_npcOper = Oper_BuySell;
+	m_nextOperationTime = ::GetTickCount();
+}
+
+bool EntityRole::BuySellGoods()
+{
+	return DoNpcOperation(Oper_BuySell);
+}
+
+bool EntityRole::DoNpcOperation(NPCOperType a_operType)
+{
+	bool bFinished = false;
+	static DWORD s_waitTime = 2000;
+	switch (m_npcOperStatus)
+	{
+	case EntityRole::BS_OpenTalk:
+	{
+		m_npc.OpenTalk();
+		m_npcOperStatus = BS_SelOption;
+		// 延迟2s再进行打开商店操作
+		m_nextOperationTime = ::GetTickCount() + s_waitTime;
+	}
+	break;
+	case EntityRole::BS_SelOption:
+	{
+		DWORD dwCurTime = ::GetTickCount();
+		if (dwCurTime > m_nextOperationTime)
+		{
+			m_npc.OpenShop();
+			m_npcOperStatus = BS_Operation;
+			m_nextOperationTime = dwCurTime + s_waitTime;
+		}
+	}
+	break;
+	case EntityRole::BS_Operation:
+	{
+		DWORD dwCurTime = ::GetTickCount();
+		if (dwCurTime > m_nextOperationTime)
+		{
+			// 买卖物品
+			if (Oper_BuySell == a_operType)
+			{
+				for (auto item : m_config.buys)
+				{
+					m_npc.BuyGoodsByName(item.first, item.second);
+					::Sleep(50);
+				}
+			}
+			m_npcOperStatus = BS_CloseOption;
+			//m_nextOperationTime = dwCurTime + 2000;
+		}
+	}
+	break;
+	case EntityRole::BS_CloseOption:
+	{
+		DWORD dwCurTime = ::GetTickCount();
+		if (dwCurTime > m_nextOperationTime)
+		{
+			if (Oper_Store == a_operType)
+			{
+				m_npc.CloseDepot();
+				m_npcOperStatus = BS_Finished;
+			}
+			else
+			{
+				m_npc.CloseShop();
+				m_npcOperStatus = BS_CloseTalk;
+			}
+			
+			m_nextOperationTime = dwCurTime + s_waitTime;
+		}
+	}
+	break;
+	case EntityRole::BS_CloseTalk:
+	{
+		DWORD dwCurTime = ::GetTickCount();
+		if (dwCurTime > m_nextOperationTime)
+		{
+			m_npc.CloseTalk();
+			m_npcOperStatus = BS_Finished;
+			m_nextOperationTime = dwCurTime + s_waitTime;
+		}
+	}
+	break;
+	case EntityRole::BS_Finished:
+	{
+		DWORD dwCurTime = ::GetTickCount();
+		if (dwCurTime > m_nextOperationTime)
+		{
+			// 重新设置初始状态，并设置完成标记
+			m_npc.SetID(EntityBase::ID_NULL);
+			m_npcOperStatus = BS_OpenTalk;
+			m_nextOperationTime = 0;
+			bFinished = true;
+		}
+	}
+	break;
+	default:
+		break;
+	}
+	return bFinished;
 }
 
 // 使用物品
