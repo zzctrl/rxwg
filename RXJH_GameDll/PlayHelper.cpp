@@ -3,6 +3,7 @@
 #include "EntifyMonster.h"
 #include "EntityNPC.h"
 #include "Config.h"
+#include "MapManager.h"
 
 
 
@@ -150,7 +151,8 @@ void PlayHelper::AutoAttack()
 void PlayHelper::WalkToDepotNPC()
 {
 	MapInfo info;
-	if (m_config.GetMapInfoByName(m_config.szSupplyMap, info))
+	MapManager& mapMgr = MapManager::GetMgr();
+	if (mapMgr.GetMapInfoByName(m_config.szSupplyMap, info))
 	{
 		PointF curPt = m_role.GetPoint();
 		PointF destPt = { info.depotPt.x, info.depotPt.y };
@@ -189,7 +191,8 @@ void PlayHelper::StoreGoods()
 void PlayHelper::WalkToSupplyNPC()
 {
 	MapInfo info;
-	if (m_config.GetMapInfoByName(m_config.szSupplyMap, info))
+	MapManager& mapMgr = MapManager::GetMgr();
+	if (mapMgr.GetMapInfoByName(m_config.szSupplyMap, info))
 	{
 		PointF curPt = m_role.GetPoint();
 		PointF destPt = { info.supplyPt.x, info.supplyPt.y };
@@ -228,7 +231,8 @@ void PlayHelper::BuySellGoods()
 void PlayHelper::WalkToWorkPoint()
 {
 	MapInfo info;
-	if (m_config.GetMapInfoByName(m_config.szWorkMap, info))
+	MapManager& mapMgr = MapManager::GetMgr();
+	if (mapMgr.GetMapInfoByName(m_config.szWorkMap, info))
 	{
 		PointF curPt = m_role.GetPoint();
 		PointF destPt = { m_config.pt.x, m_config.pt.y };
@@ -527,9 +531,10 @@ void PlayHelper::CheckBackForSupply()
 	if (bNeedSupply)
 	{
 		MapInfo info;
-		if (m_config.GetMapInfoByName(m_config.szSupplyMap, info))
+		MapManager& mapMgr = MapManager::GetMgr();
+		if (mapMgr.GetMapInfoByName(m_config.szSupplyMap, info))
 		{
-			m_curStatus = WS_GoToDepotNPC;
+			m_curStatus = info.szDepotNpc.IsEmpty() ? WS_GoToSupplyNPC : WS_GoToDepotNPC;
 			// 判断是否有回城符
 			int index = package.GetGoodsIndex(info.szHCFName);
 			if (index >= 0)
@@ -541,8 +546,16 @@ void PlayHelper::CheckBackForSupply()
 				// 如果补给地图跟挂机地图一样，则跑路回去
 				if (m_config.szSupplyMap == m_config.szWorkMap)
 				{
-					PointF pt = { info.supplyPt.x, info.supplyPt.y };
-					m_role.WalkTo(pt);
+					if (info.szDepotNpc.IsEmpty())
+					{
+						PointF pt = { info.supplyPt.x, info.supplyPt.y };
+						m_role.WalkTo(pt);
+					}
+					else
+					{
+						PointF pt = { info.depotPt.x, info.depotPt.y };
+						m_role.WalkTo(pt);
+					}
 				}
 				else
 				{

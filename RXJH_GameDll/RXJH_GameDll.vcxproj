@@ -114,6 +114,7 @@
     <ClCompile Include="EntityPlayer.cpp" />
     <ClCompile Include="Funtion.cpp" />
     <ClCompile Include="ListBoxEx.cpp" />
+    <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Package.cpp" />
     <ClCompile Include="PlayHelper.cpp" />
     <ClCompile Include="RXJH_GameDll.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="EntityPlayer.h" />
     <ClInclude Include="Funtion.h" />
     <ClInclude Include="ListBoxEx.h" />
+    <ClInclude Include="MapManager.h" />
     <ClInclude Include="Package.h" />
     <ClInclude Include="PlayHelper.h" />
     <ClInclude Include="Resource.h" />

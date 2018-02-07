@@ -11,6 +11,7 @@
 #include "Config.h"
 #include "BuyCountDlg.h"
 #include "EntityNPC.h"
+#include "MapManager.h"
 
 
 // CCDialg_Main 对话框
@@ -219,7 +220,8 @@ BOOL CCDialg_Main::OnInitDialog()
 	m_MPList.SetCurSel(3);
 	m_comboBuyList.SetCurSel(0);
 
-	for (auto& item : m_cfg.maps)
+	const std::vector<MapInfo>& maps = MapManager::GetMgr().GetAllMaps();
+	for (auto& item : maps)
 	{
 		m_comboMap.AddString(item.szName);
 		m_comboSupply.AddString(item.szName);

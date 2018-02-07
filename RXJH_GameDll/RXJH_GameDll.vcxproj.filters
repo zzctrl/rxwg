@@ -36,9 +36,6 @@
     <ClCompile Include="CutThreadApp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Funtion.cpp">
-      <Filter>rxfun</Filter>
-    </ClCompile>
     <ClCompile Include="EntifyMonster.cpp">
       <Filter>rxfun</Filter>
     </ClCompile>
@@ -66,14 +63,20 @@
     <ClCompile Include="Package.cpp">
       <Filter>rxfun</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ListBoxEx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="BuyCountDlg.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="MapManager.cpp">
+      <Filter>rxfun</Filter>
+    </ClCompile>
+    <ClCompile Include="Funtion.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,9 +97,6 @@
     </ClInclude>
     <ClInclude Include="CutThreadApp.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Funtion.h">
-      <Filter>rxfun</Filter>
     </ClInclude>
     <ClInclude Include="EntityBase.h">
       <Filter>rxfun</Filter>
@@ -128,14 +128,20 @@
     <ClInclude Include="Package.h">
       <Filter>rxfun</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ListBoxEx.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="BuyCountDlg.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="MapManager.h">
+      <Filter>rxfun</Filter>
+    </ClInclude>
+    <ClInclude Include="Funtion.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
