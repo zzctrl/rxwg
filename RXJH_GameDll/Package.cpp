@@ -103,6 +103,12 @@ bool Package::IsPackageFull()
 	return true;
 }
 
+DWORD Package::GetArrowCount()
+{
+	DWORD dwCount = Read_RD(Read_RD(EntityBaseAddress) + 0x2C8);
+	return dwCount;
+}
+
 // 统计背包里所有红/蓝药数量
 DWORD Package::GetAllHPDrugCount(const std::vector<CString>& a_hpDrugs)
 {

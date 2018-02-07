@@ -81,6 +81,12 @@ void EntityNPC::CloseTalk()
 	DoNPCOperation(NPCCloseTalkBaseAddress);
 }
 
+void EntityNPC::ChooseOption(DWORD a_index)
+{
+	DWORD NPCChooseBaseAddress = 0x0109CF5C + a_index * 4;
+	DoNPCOperation(NPCChooseBaseAddress);
+}
+
 void EntityNPC::OpenShop()
 {
 	DWORD NPCCloseTalkBaseAddress = 0x0109CF5C;

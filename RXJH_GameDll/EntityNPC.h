@@ -21,6 +21,9 @@ public:
 	// 关闭商店
 	void CloseShop();
 
+	// 打开对话后，选择指定索引的选项卡
+	void ChooseOption(DWORD a_index);
+
 	// 关闭仓库
 	void CloseDepot();
 
