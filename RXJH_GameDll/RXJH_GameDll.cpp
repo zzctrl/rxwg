@@ -229,8 +229,6 @@ void CRXJH_GameDllApp::OnMsgInitialize()
 
 	// 初始化当前角色属性等信息
 	m_playHelper.Initialize();
-	// 修改攻击距离
-	m_playHelper.ModifyAttackDistance();
 
 	// 通知设置窗口加载配置
 	CCDialg_Main* pDlg = m_pThread->GetSettingDlg();

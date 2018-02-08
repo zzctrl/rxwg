@@ -4,6 +4,7 @@
 
 Config::Config()
 {
+	hpDrugs.push_back("雕翎箭");
 	hpDrugs.push_back("金创药(小)");
 	hpDrugs.push_back("金创药(中)");
 	hpDrugs.push_back("金创药(大)");

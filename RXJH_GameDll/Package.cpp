@@ -105,7 +105,9 @@ bool Package::IsPackageFull()
 
 DWORD Package::GetArrowCount()
 {
-	DWORD dwCount = Read_RD(Read_RD(EntityBaseAddress) + 0x2C8);
+	DWORD dwBaseAddress = 0x02D105D8;
+	DWORD dwNation = Read_RD(Read_RD(dwBaseAddress) + 0x440);
+	DWORD dwCount = Read_RD(dwNation + 0xC44);
 	return dwCount;
 }
 

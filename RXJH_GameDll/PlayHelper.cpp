@@ -26,6 +26,8 @@ void PlayHelper::Initialize()
 	// 初始化角色ID
 	DWORD dwRoleID = Read_RD(Read_RD(EntityBaseAddress) + 0xC);
 	m_role.SetID(dwRoleID);
+	// 修改攻击距离
+	ModifyAttackDistance();
 }
 
 bool PlayHelper::IsDataValid()
@@ -79,6 +81,8 @@ void PlayHelper::Reset()
 	m_curStatus = WS_None;
 	m_role.SetID(EntityBase::ID_NULL);
 	m_config.ResetData();
+
+	ModifyAttackDistance(false);
 }
 
 void PlayHelper::UpdateConfig(const Config& a_config)
@@ -117,12 +121,12 @@ void PlayHelper::AutoAttack()
 		{
 			// 判断是否可以使用必杀技
 			EntifyMonster monster(dwSelID);
-			if (monster.IsKillStatus())
+			/*if (monster.IsKillStatus())
 			{
 				// 必杀技快捷键
 				m_role.UseShortcutF1_F10(EntityRole::FC_F8);
 			}
-			else
+			else*/
 			{
 				int nAttackIndex = m_config.nAttackType;
 				// 普攻或技能
@@ -519,11 +523,11 @@ void PlayHelper::CheckBackForSupply()
 		}
 		if (m_config.bCheckArrows)
 		{
-			/*if (1)
+			if (package.GetArrowCount() < m_config.nMinArrows)
 			{
 				bNeedSupply = true;
 				break;
-			}*/
+			}
 		}
 	} while (0);
 	
