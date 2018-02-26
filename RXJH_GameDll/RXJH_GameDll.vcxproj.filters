@@ -78,6 +78,15 @@
     <ClCompile Include="Funtion.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="SellFilter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PageWork.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PageSupply.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RXJH_GameDll.h">
@@ -142,6 +151,15 @@
     </ClInclude>
     <ClInclude Include="Funtion.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="SellFilter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PageWork.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PageSupply.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

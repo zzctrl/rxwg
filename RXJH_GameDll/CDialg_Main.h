@@ -7,6 +7,8 @@
 #include "afxwin.h"
 #include "PlayHelper.h"
 #include "ListBoxEx.h"
+#include "PageWork.h"
+#include "PageSupply.h"
 #include <map>
 
 // 挂机相关消息，由游戏线程处理
@@ -34,6 +36,8 @@
 #define TIMERID_WORK			0x1001   
 // 加辅助
 #define TIMERID_FUZHU			0x1002
+//
+#define TIMERID_SLEEP			0x1003
 
 
 class CCDialg_Main : public CDialog
@@ -49,7 +53,7 @@ public:
 
 	void SetGameWnd(HWND a_hwnd);
 	// 设置角色当前坐标
-	void SetPoint(POINT a_pt);
+	void SetPointAndMap(POINT a_pt, const CString& a_map);
 
 	// 获取设置数据，在游戏线程会访问，需要加锁
 	Config GetConfigData();
@@ -85,6 +89,10 @@ private:
 
 	PlayHelper m_playHelper;
 public:
+	CPropertySheet m_sheet;
+	CPageWork m_pageWork;
+	CPageSupply m_pageSupply;
+
 	CButton m_btnWork;
 	//CString m_szMapName;
 	DWORD m_nAttackRange;

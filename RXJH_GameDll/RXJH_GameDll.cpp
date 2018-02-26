@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "RXJH_GameDll.h"
+#include "CDialg_Main.h"
 
 
 
@@ -95,6 +96,7 @@ LRESULT CRXJH_GameDllApp::ProcessMessage(HWND hwnd, UINT msg, WPARAM wparam, LPA
 	default:
 		break;
 	}
+	
 	return ret;
 }
 
@@ -160,8 +162,13 @@ LRESULT CALLBACK MessageProc(int nCode, WPARAM wParam, LPARAM lParam)
 void SetDllHookClient()
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	// test
+	
 	::EnumWindows(EnumWindowsProc, NULL);
+	// test
+	CCDialg_Main* pDlg = new CCDialg_Main;
+	pDlg->Create(IDD_DIALOG_MAIN);
+	pDlg->ShowWindow(SW_SHOW);
+	// endtest
 
 	// 设置创建窗口消息的钩子
 	//g_wndProcHook = ::SetWindowsHookExA(WH_CBT, MessageProc, ::GetModuleHandle("RXJH_GameDll.dll"), 0);
@@ -236,6 +243,8 @@ void CRXJH_GameDllApp::OnMsgInitialize()
 	pDlg->PostMessageA(RXJHMSG_LOADCONFIG, (WPARAM)pRoleName);
 	// 设置当前游戏窗口标题
 	::SetWindowTextA(m_hGameWnd, pRoleName);
+	// sleep 降低cpu使用率
+	::SetTimer(m_hGameWnd, TIMERID_SLEEP, 13, NULL);
 }
 
 // 更新设置
@@ -258,7 +267,7 @@ void CRXJH_GameDllApp::OnMsgAutoWork(bool a_bWork)
 	if (a_bWork)
 	{
 		m_playHelper.Start();
-		::SetTimer(m_hGameWnd, TIMERID_WORK, 400, NULL);
+		::SetTimer(m_hGameWnd, TIMERID_WORK, 200, NULL);
 	}
 	else
 	{
@@ -269,12 +278,13 @@ void CRXJH_GameDllApp::OnMsgAutoWork(bool a_bWork)
 void CRXJH_GameDllApp::OnMsgGetPoint()
 {
 	POINT pt = m_playHelper.GetCurPoint();
-	m_playHelper.SetWorkPoint(pt);
+	CString szMap = m_playHelper.GetCurMap();
+	m_playHelper.SetWorkPointAndMap(pt, szMap);
 
 	CCDialg_Main* pDlg = m_pThread->GetSettingDlg();
 	if (pDlg)
 	{
-		pDlg->SetPoint(pt);
+		pDlg->SetPointAndMap(pt, szMap);
 	}
 }
 // 定时器消息处理
@@ -287,6 +297,9 @@ void CRXJH_GameDllApp::OnTimer(DWORD a_timerID)
 		break;
 	case TIMERID_WORK:
 		m_playHelper.Work();
+		break;
+	case TIMERID_SLEEP:
+		::Sleep(12);
 		break;
 	default:
 		break;

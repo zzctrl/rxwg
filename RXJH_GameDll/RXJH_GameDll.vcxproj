@@ -104,6 +104,9 @@
   <ItemGroup>
     <ClCompile Include="AddressData.cpp" />
     <ClCompile Include="BuyCountDlg.cpp" />
+    <ClCompile Include="PageSupply.cpp" />
+    <ClCompile Include="PageWork.cpp" />
+    <ClCompile Include="SellFilter.cpp" />
     <ClCompile Include="CDialg_Main.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="CutThreadApp.cpp" />
@@ -127,6 +130,9 @@
   <ItemGroup>
     <ClInclude Include="AddressData.h" />
     <ClInclude Include="BuyCountDlg.h" />
+    <ClInclude Include="PageSupply.h" />
+    <ClInclude Include="PageWork.h" />
+    <ClInclude Include="SellFilter.h" />
     <ClInclude Include="CDialg_Main.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="CutThreadApp.h" />

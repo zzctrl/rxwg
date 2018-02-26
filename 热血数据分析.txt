@@ -1,3 +1,7 @@
+==========================
+SOCKET句柄：
+socket: [[01097760] + 0x30]  // 断线时，该值为-1 
+
 =====================================
 人物基本属性
 
@@ -12,12 +16,27 @@
 最大经验：+0xA0
 
 当前角色ID：[[02d36514]+c]
-攻击状态：选中对象ID：[[02d36514]+0x1a30] 和+0x1a34  ???
+攻击状态：byte [[02d36514]+0x25be] 
 选中对象ID：[[02d36514]+0x1a3c]
-x坐标：[[02d36514]+0x1a40]
+目的地x坐标：[[02d36514]+0x1a40]
 y坐标：[[02d36514]+0x1a48]
 移动状态：[[02d36514]+0x1a5c] 当前移动状态，移动时为1
 [[02d36514]+0x1a60] byte 好像也跟移动有关。
+
+
+目的地坐标x: [[02d36514]+0x1c04]
+当前坐标x: [[02d36514]+0x1c40]
+使用轻功状态：[[02d36514]+0x25F8]
+
+攻击状态：
+Client.exe+12CC93 - 8B 4F 14              - mov ecx,[edi+14]
+Client.exe+12CC96 - 3B 0D 0865D302        - cmp ecx,[Client.exe+2936508] 
+Client.exe+12CC9C - 74 06                 - je Client.exe+12CCA4
+Client.exe+12CC9E - 89 87 5C1A0000        - mov [edi+00001A5C],eax
+Client.exe+12CCA4 - C6 87 BE250000 01     - mov byte ptr [edi+000025BE],01    <===
+Client.exe+12CCAB - 8B 87 341A0000        - mov eax,[edi+00001A34]
+Client.exe+12CCB1 - 8B 4E 4C              - mov ecx,[esi+4C]
+
 
 
 
@@ -26,7 +45,7 @@ y坐标：[[02d36514]+0x1a48]
 
 判断攻击距离：
 00506506 - 83 F8 03              - cmp eax,03 { 3 }
-00506509 - 75 07                 - jne 00506512
+00506509 - 75 07                 - jne 00506512                  <====
 0050650B - C7 45 0C 05000000     - mov [ebp+0C],00000005 { 5 }
 00506512 - D9 45 08              - fld dword ptr [ebp+08]
 00506515 - DB 45 0C              - fild dword ptr [ebp+0C]
@@ -54,6 +73,8 @@ jne 00506512
 医生本身攻击距离为70,修改后最大可到90(0x5a)
 弓手本身攻击距离为73，修改后最大可到228(0xe4)
 
+近战职业修改攻击距离后，使用技能攻击距离可以达到90(0x5a)
+
 人物攻击距离基址：[02D36514] + 0x1a70 (float)
 
 
@@ -69,11 +90,16 @@ jne 00506512
 格子：[0x02D105DC] + ebx*4 + 0x410 (对应物品基址)
 物品基址：[0x02D105DC] + ebx*4 + 0x410
 物品ID：[物品基址] + 0x4C
+物品等级：[物品基址] + 0xAC  dword类型(装备等级>1，其他物品为1)
 物品名称：[物品基址] + 0x5C
 描述：[物品基址] + 0x230
 物品数量：[物品基址] + 0xC44   
 石头分类(比如金刚石里的武功，追加。。。)：[物品基址] + 0xD1C
 石头属性值：[物品基址] + 0xD24   
+装备强化等级：[物品基址] + 0xD24   dword类型
+装备合成第一条属性：[物品基址] + 0x430，之后每一条间隔0x200
+
+一个物品的长度为：0xE88
 
 
 弓手箭矢数量： [[[0x02D105D8] + 440] + C44]
@@ -162,6 +188,81 @@ EIP=007FFE27
 0080DD69    C785 EED7FFFF 0>MOV DWORD PTR SS:[EBP-0x2812],0x1
 0080DD73    E8 A824CDFF     CALL Client.004E0220
 
+卖物品：
+0080DCBE    8B0D 1CBDAE02   MOV ECX,DWORD PTR DS:[0x2AEBD1C]
+0080DCC4    898D 06D8FFFF   MOV DWORD PTR SS:[EBP-0x27FA],ECX
+0080DCCA    8B0D 20BDAE02   MOV ECX,DWORD PTR DS:[0x2AEBD20]
+0080DCD0    8995 22D8FFFF   MOV DWORD PTR SS:[EBP-0x27DE],EDX
+0080DCD6    8995 02D8FFFF   MOV DWORD PTR SS:[EBP-0x27FE],EDX
+0080DCDC    68 8E000000     PUSH 0x8E
+0080DCE1    8D95 E8D7FFFF   LEA EDX,DWORD PTR SS:[EBP-0x2818]
+0080DCE7    898D 0AD8FFFF   MOV DWORD PTR SS:[EBP-0x27F6],ECX
+0080DCED    8B0D 60770901   MOV ECX,DWORD PTR DS:[0x1097760]
+0080DCF3    52              PUSH EDX
+0080DCF4    C785 EED7FFFF 0>MOV DWORD PTR SS:[EBP-0x2812],0x2
+0080DCFE    8985 1ED8FFFF   MOV DWORD PTR SS:[EBP-0x27E2],EAX
+0080DD04    8985 FED7FFFF   MOV DWORD PTR SS:[EBP-0x2802],EAX
+0080DD0A    E8 1125CDFF     CALL Client.004E0220
+
+卖出带属性物品：
+0080DE0E    F3:A5           REP MOVS DWORD PTR ES:[EDI],DWORD PTR DS:[ESI]
+0080DE10    8995 0AD8FFFF   MOV DWORD PTR SS:[EBP-0x27F6],EDX
+0080DE16    8985 0ED8FFFF   MOV DWORD PTR SS:[EBP-0x27F2],EAX
+0080DE1C    68 8E000000     PUSH 0x8E
+0080DE21    8D8D E8D7FFFF   LEA ECX,DWORD PTR SS:[EBP-0x2818]
+0080DE27    51              PUSH ECX
+0080DE28    8B0D 60770901   MOV ECX,DWORD PTR DS:[0x1097760]
+0080DE2E    E8 ED23CDFF     CALL Client.004E0220
+
+
+0019A598  00 00 92 00 88 00 02 00 00 00 00 00 00 00 94 CA  ..??.......斒
+0019A5A8  9A 3B 00 00 00 00 07 00 00 00 00 00 00 00 23 3B  ?...........#;
+0019A5B8  00 00 00 00 00 00 57 19 32 52 AD 26 FC 04 94 CA  ......W2R??斒
+0019A5C8  9A 3B 00 00 00 00 07 00 00 00 00 00 00 00 01 00  ?............
+0019A5D8  00 14 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ..............
+
+00197D38  00 00 92 00 88 00 02 00 00 00 00 00 00 00 34 13  ..??.......4
+00197D48  93 06 00 00 00 00 01 00 00 00 00 00 00 00 D1 7E  ?...........褈
+00197D58  A0 00 00 00 00 00 69 2C FA 8E AE 26 7C 04 34 13  ?....i,鷰?|4
+00197D68  93 06 00 00 00 00 01 00 00 00 00 00 00 00 01 01  ?...........
+00197D78  01 00 28 02 00 00 00 00 00 00 00 00 00 00 00 00  .(............
+
+00197D38  00 00 92 00 88 00 02 00 00 00 00 00 00 00 34 13  ..??.......4
+00197D48  93 06 00 00 00 00 01 00 00 00 00 00 00 00 C1 8B  ?...........翄
+00197D58  A0 00 00 00 00 00 5F A4 65 8F AE 26 7C 04 34 13  ?...._彯&|4
+00197D68  93 06 00 00 00 00 01 00 00 00 00 00 00 00 01 06  ?...........
+00197D78  01 00 28 02 00 00 00 00 00 00 00 00 00 00 00 00  .(............
+
+00197D38  00 00 92 00 88 00 02 00 00 00 00 00 00 00 E2 82  ..??.......鈧
+00197D48  21 0D 00 00 00 00 01 00 00 00 00 00 00 00 B1 98  !............睒
+00197D58  A0 00 00 00 00 00 CB 23 07 90 AB 26 7C 05 E2 82  ?....?惈&|鈧
+00197D68  21 0D 00 00 00 00 01 00 00 00 00 00 00 00 01 0B  !............
+00197D78  02 00 14 00 00 00 00 00 00 00 00 00 00 00 00 00  ..............
+
+卖一个寒玉石：
+0019A598  00 00 92 00 88 00 02 00 00 00 00 00 00 00 02 08  ..??.......
+0019A5A8  AF 2F 00 00 00 00 02 00 00 00 00 00 00 00 23 0A  ?...........#.
+0019A5B8  A0 00 00 00 00 00 AD C6 A8 1C A0 26 BC 04 02 08  ?....???
+0019A5C8  AF 2F 00 00 00 00 02 00 00 00 00 00 00 00 01 08  ?...........
+0019A5D8  00 0A 01 00 00 00 42 0D 03 00 00 00 00 00 00 00  .....B........
+
+卖3个强化石：
+0019A598  00 00 92 00 88 00 02 00 00 00 00 00 00 00 06 08  ..??.......
+0019A5A8  AF 2F 00 00 00 00 0A 00 00 00 00 00 00 00 33 18  ?............3
+0019A5B8  A0 00 00 00 00 00 DB 32 98 33 91 26 7C 04 06 08  ?....???|
+0019A5C8  AF 2F 00 00 00 00 0A 00 00 00 00 00 00 00 01 14  ?............
+0019A5D8  00 0C 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ...............
+
+卖5个大金创药：
+0019A598  00 00 92 00 88 00 02 00 00 00 00 00 00 00 67 CA  ..??.......g?
+0019A5A8  9A 3B 00 00 00 00 4C 00 00 00 00 00 00 00 63 42  ?....L.......cB
+0019A5B8  A0 00 00 00 00 00 A7 89 8A D2 AA 26 FC 04 67 CA  ?....娨??g?
+0019A5C8  9A 3B 00 00 00 00 4C 00 00 00 00 00 00 00 01 1C  ?....L.......
+0019A5D8  00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00  ...............
+
+
+
+
 ==================================================
 快捷栏基址：[02D11D40]
 F1-F10 1-0每个格的地址base：[[02D11D40] + index * 4 + 410]  (索引从0-19)
@@ -241,8 +342,16 @@ client.exe: 0x400000
 X坐标：属性 + 0x1060
 y坐标：属性 + 0x1068
 
+勇士怪标记：属性 + 0x139C (3或0表示勇士怪，2是普通怪)
+属性 + 7C0，0x27 - 0x2C表示勇士怪，否则为普通怪
+
+
+物品x坐标：属性 + 0x48  (144,160,19C也都是x坐标)
+物品y坐标：属性 + 0x50
+物品距离：属性 + 0x64
 物品分类ID：属性 + 0x78
 物品名称：属性 + 0x94
+拾取最大距离为：40
 
 =========================================
 选怪或者NPC的call：
@@ -419,16 +528,188 @@ push eax
 push 0x3F4
 call edx
 ====================================
+穿墙相关代码：
+障碍物判断(改完这个就可以隔墙打怪了?)：
+Client.exe+1B4099 - 8B 45 D8              - mov eax,[ebp-28]  // 有障碍时eax非0， 可以改为=> xor eax, eax 
+Client.exe+1B409C - 5F                    - pop edi
+Client.exe+1B409D - 5E                    - pop esi
+Client.exe+1B409E - 5B                    - pop ebx
+Client.exe+1B409F - 8B E5                 - mov esp,ebp
+Client.exe+1B40A1 - 5D                    - pop ebp
+Client.exe+1B40A2 - C2 4800               - ret 0048 { 72 }
+
+
+
+Client.exe+12B81E - E8 1D4E0A00           - call Client.exe+1D0640
+Client.exe+12B823 - 8B 8D C0FEFFFF        - mov ecx,[ebp-00000140]
+Client.exe+12B829 - 8B F0                 - mov esi,eax
+Client.exe+12B82B - 8B 85 BCFEFFFF        - mov eax,[ebp-00000144]
+Client.exe+12B831 - 3B 87 501C0000        - cmp eax,[edi+00001C50]
+Client.exe+12B837 - 75 08                 - jne Client.exe+12B841
+Client.exe+12B839 - 3B 8F 541C0000        - cmp ecx,[edi+00001C54]
+Client.exe+12B83F - 74 47                 - je Client.exe+12B888   ===> 跳转到52b888
+
+Client.exe+12B881 - E8 BA4D0A00           - call Client.exe+1D0640
+Client.exe+12B886 - 8B F0                 - mov esi,eax
+Client.exe+12B888 - 33 C9                 - xor ecx,ecx
+Client.exe+12B88A - 3B F1                 - cmp esi,ecx       //(或改为jmp 52b8ae) 有障碍时 esi为0,否则为1，可以让其为0时也跳转到52B8AE
+Client.exe+12B88C - 0F84 A8000000         - je Client.exe+12B93A
+Client.exe+12B892 - 83 FE 03              - cmp esi,03 { 3 }
+Client.exe+12B895 - 0F84 9F000000         - je Client.exe+12B93A
+Client.exe+12B89B - 83 FE 02              - cmp esi,02 { 2 }
+Client.exe+12B89E - 75 0E                 - jne Client.exe+12B8AE
+Client.exe+12B8A0 - 89 8F 80260000        - mov [edi+00002680],ecx
+Client.exe+12B8A6 - 8D 41 01              - lea eax,[ecx+01]
+Client.exe+12B8A9 - E9 851B0000           - jmp Client.exe+12D433
+Client.exe+12B8AE - D9 85 38FEFFFF        - fld dword ptr [ebp-000001C8]
+Client.exe+12B8B4 - 8B 85 F4D4FFFF        - mov eax,[ebp-00002B0C]
+
+
+有障碍：
+526D5F => 51F6A0 => 520594
+有障碍：
+526D5F => 51F6A0 => 51F9DE => 52C1FA
+
+
+528AE2   je 00528EEE
+
+
+Client.exe+128AE8 - 8B CE                 - mov ecx,esi
+Client.exe+128AEA - E8 D153F2FF           - call Client.exe+4DEC0
+Client.exe+128AEF - 48                    - dec eax
+Client.exe+128AF0 - 8D 0C C5 00000000     - lea ecx,[eax*8+00000000]
+Client.exe+128AF7 - 2B C8                 - sub ecx,eax
+Client.exe+128AF9 - 8B 06                 - mov eax,[esi]
+Client.exe+128AFB - D9 44 88 08           - fld dword ptr [eax+ecx*4+08]
+
+
+
+Client.exe+1B5D83 - 8B F0                 - mov esi,eax
+Client.exe+1B5D85 - 85 F6                 - test esi,esi
+Client.exe+1B5D87 - E9 DE000000           - jmp Client.exe+1B5E6A      <===== 穿墙
+Client.exe+1B5D8C - 90                    - nop 
+Client.exe+1B5D8D - D9 45 08              - fld dword ptr [ebp+08]
+Client.exe+1B5D90 - 8B 7E 14              - mov edi,[esi+14]
+
+隔墙打怪相关：
+Client.exe+1B5D00 - 55                    - push ebp
+
+Client.exe+1B697D - 83 F8 02              - cmp eax,02 { 2 }
+
+Client.exe+11FDC3 - E8 F81F0B00           - call Client.exe+1D1DC0
+Client.exe+11FDC8 - 33 C9                 - xor ecx,ecx
+Client.exe+11FDCA - 3B C1                 - cmp eax,ecx
+Client.exe+11FDCC - 0F85 04080000         - jne Client.exe+1205D6       <======= 障碍里打怪
+Client.exe+11FDD2 - 88 4E 20              - mov [esi+20],cl
+Client.exe+11FDD5 - 89 8D 20F7FCFF        - mov [ebp-000308E0],ecx
+Client.exe+11FDDB - 89 4E 1C              - mov [esi+1C],ecx
+Client.exe+11FDDE - 56                    - push esi
+Client.exe+11FDDF - 8B CB                 - mov ecx,ebx
+Client.exe+11FDE1 - E8 1A97FFFF           - call Client.exe+119500
 
 
 
 
 
+=============================================
+地图Npc信息
+
+泫勃派 => 三邪关      2440  -338
+泫勃派 => 柳正关      -2352   -460
+泫勃派 => 南明湖      -15  -2350
+泫勃派 => 九泉 (殷黎亭) 60 1866
+九泉之下1层： 殷黎亭 0 -264  张大成 长子   -2  81
+2层及以后张大成坐标： 0 8
+
+南明湖 => 泫勃派（可以用回城符）  -104  2418
+南明湖 => 南明洞   （南明洞护法） 1346  1156     
+
+三邪关 => 泫勃派   2685 -369
+三邪关 => 柳善提督府   7350 1235
+
+柳善提督府 => 三邪关   -2285 -525
+柳善提督府 => 松月关   -2285 -525
+柳善提督府 => 血魔洞(1,2,3层)   -2285 -525
+
+柳正关 => 泫勃派   -2688 -292
+柳正关 => 神武门   -7432 920
+
+神武门 => 柳正关   2195 393
+神武门 => 百武关   -2285 -525
+神武门 => 地灵洞(1,2,3层)   -2285 -525
+
+勇士怪物：
+Client.exe+F4855 - 81 BE B0030000 0F270000 - cmp [esi+000003B0],0000270F { 9999 }
+Client.exe+F485F - 7C 09                 - jl Client.exe+F486A
+Client.exe+F4861 - 83 BE 70010000 00     - cmp dword ptr [esi+00000170],00 { 0 }
+Client.exe+F4868 - 74 08                 - je Client.exe+F4872
+Client.exe+F486A - 8D 4E F8              - lea ecx,[esi-08]
+Client.exe+F486D - E8 1ED6FFFF           - call Client.exe+F1E90               <==
+Client.exe+F4872 - 83 BE 54030000 00     - cmp dword ptr [esi+00000354],00 { 0 }
+
+Client.exe+F2082 - C7 85 D4FEFFFF FFFFFFC8 - mov [ebp-0000012C],C8FFFFFF { -922746881 }
+Client.exe+F208C - 8D 85 60FFFFFF        - lea eax,[ebp-000000A0]
+Client.exe+F2092 - 50                    - push eax
+Client.exe+F2093 - 53                    - push ebx
+Client.exe+F2094 - 8B CF                 - mov ecx,edi
+Client.exe+F2096 - E8 C5A6FFFF           - call Client.exe+EC760
+Client.exe+F209B - 8B 87 5C030000        - mov eax,[edi+0000035C]
+
+Client.exe+EC8C1 - 50                    - push eax
+Client.exe+EC8C2 - 03 F7                 - add esi,edi
+Client.exe+EC8C4 - 56                    - push esi
+Client.exe+EC8C5 - E8 463D0500           - call Client.exe+140610
+
+Client.exe+5B3FA5 - 89 17                 - mov [edi],edx
+Client.exe+5B3FA7 - 83 C7 04              - add edi,04 { 4 }
+Client.exe+5B3FAA - 83 E9 01              - sub ecx,01 { 1 }
+Client.exe+5B3FAD - 74 9F                 - je Client.exe+5B3F4E
+Client.exe+5B3FAF - BA FFFEFE7E           - mov edx,7EFEFEFF { 2130640639 }
+Client.exe+5B3FB4 - 8B 06                 - mov eax,[esi]
+Client.exe+5B3FB6 - 03 D0                 - add edx,eax
+Client.exe+5B3FB8 - 83 F0 FF              - xor eax,-01 { 255 }
+Client.exe+5B3FBB - 33 C2                 - xor eax,edx
+Client.exe+5B3FBD - 8B 16                 - mov edx,[esi]
+Client.exe+5B3FBF - 83 C6 04              - add esi,04 { 4 }
+Client.exe+5B3FC2 - A9 00010181           - test eax,81010100 { -2130640640 }
+Client.exe+5B3FC7 - 74 DC                 - je Client.exe+5B3FA5
+Client.exe+5B3FC9 - 84 D2                 - test dl,dl
 
 
 
+Client.exe+5CDF79 - 8B BD 94FDFFFF        - mov edi,[ebp-0000026C]
+Client.exe+5CDF7F - 50                    - push eax
+Client.exe+5CDF80 - FF B5 E0FDFFFF        - push [ebp-00000220]
+Client.exe+5CDF86 - 8D 85 DCFDFFFF        - lea eax,[ebp-00000224]
+Client.exe+5CDF8C - E8 23F4FFFF           - call Client.exe+5CD3B4
 
 
+Client.exe+F208C - 8D 85 60FFFFFF        - lea eax,[ebp-000000A0]
+Client.exe+F2092 - 50                    - push eax
+Client.exe+F2093 - 53                    - push ebx
+Client.exe+F2094 - 8B CF                 - mov ecx,edi
+
+// eax是缓冲区首地址，ebx是怪物名称地址，ecx是怪物基址-8
+// ps：可以把ebx改为怪物描述信息，这样能显示血量，距离等信息
+Client.exe+F2096 - E8 C5A6FFFF           - call Client.exe+EC760
+返回eax是名字
+
+// 勇士怪eax为27，否则为0
+Client.exe+EC837 - 8B 83 C8070000        - mov eax,[ebx+000007C8]  
+Client.exe+EC83D - 83 C0 D9              - add eax,-27 { 217 }
+Client.exe+EC840 - 2B F1                 - sub esi,ecx
+Client.exe+EC842 - 83 F8 05              - cmp eax,05 { 5 }
+Client.exe+EC845 - 0F87 82000000         - ja Client.exe+EC8CD
+
+Client.exe+EC8B0 - 51                    - push ecx
+Client.exe+EC8B1 - 68 1B080000           - push 0000081B { 2075 }
+Client.exe+EC8B6 - 8B 0D AC8C0C01        - mov ecx,[Client.exe+CC8CAC] { [089B1058] }
+// 返回勇士字符串的地址
+Client.exe+EC8BC - E8 4F6F2900           - call Client.exe+383810
+
+
+ebx edi + 368
+jizhi + 600 - 8 = jizhi + 5f8
 
 
 

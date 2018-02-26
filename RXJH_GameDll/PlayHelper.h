@@ -33,11 +33,13 @@ public:
 	// 获取当前坐标
 	POINT GetCurPoint();
 	CString GetCurMap();
-	// 设置挂机坐标点
-	void SetWorkPoint(POINT a_pt);
+	// 设置挂机坐标点和地图
+	void SetWorkPointAndMap(POINT a_pt, const CString& a_mapName);
 
 	// 增加人物攻击距离
 	void ModifyAttackDistance(bool a_bModify = true);
+	// 穿墙
+	void EnableChuanQiang(bool a_bEnable = true);
 	// 获取角色名称
 	char* GetRoleName();
 
@@ -56,6 +58,8 @@ private:
 	// 移动到挂机点
 	void WalkToWorkPoint();
 
+	// 寻找跨图路径
+	std::vector<CString> FindRoadMap(const CString& a_start, const CString& a_dest);
 private:
 	// 获取当前选中的ID
 	DWORD GetCurSelID();
@@ -67,10 +71,11 @@ private:
 	void InitMonterIDRange();
 
 	//  回城检测
-	void CheckBackForSupply();
+	bool CheckNeedBackForSupply();
+	void RoadMapForSupply();
 private:
-	// 无状态，自动选怪攻击状态，到仓库，存取物品，到补给NPC，买卖物品，到挂机点
-	enum WorkStatus{WS_None = 0, WS_Attack, WS_GoToDepotNPC, WS_Store, WS_GoToSupplyNPC, WS_BuySellGoods, WS_GoToWorkPt};
+	// 无状态，自动选怪攻击状态，到仓库，存取物品，到补给NPC，买卖物品，到挂机点，跨图寻路
+	enum WorkStatus{WS_None = 0, WS_Attack, WS_GoToDepotNPC, WS_Store, WS_GoToSupplyNPC, WS_BuySellGoods, WS_GoToWorkPt, WS_RoadMap};
 
 	// 设置
 	Config m_config;
@@ -88,5 +93,14 @@ private:
 
 	// 当前状态
 	WorkStatus m_curStatus;
+
+	// 跨图路径
+	std::vector<CString> m_roadMaps;
+	int m_roadIndex;
+
+	enum RoadStatus{ RS_CalcRoad = 0, RS_MoveToTransPoint};
+	RoadStatus m_roadStatus;
+	WorkStatus m_statusAfterRoadMap;
+	DWORD m_nextOperTime;
 };
 

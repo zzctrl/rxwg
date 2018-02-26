@@ -2,6 +2,7 @@
 #include "Funtion.h"
 #include "CommonRead.h"
 #include "AddressData.h"
+#include <cmath>
 
 
 //-------------------------------------------------------------------------------------
@@ -318,6 +319,71 @@ bool IsNearPoint(PointF p1, PointF p2)
 	if (dist < 1.0)
 	{
 		return true;
+	}
+	return false;
+}
+
+float CalcPointDist(PointF pt1, PointF pt2)
+{
+	int x = abs(pt1.x - pt2.x);
+	int y = abs(pt1.y - pt2.y);
+	double dist = x*x + y*y;
+	float ret = sqrt(dist);
+	return ret;
+}
+
+PointF CalcMoveDestPt(const PointF& a_start, const PointF& a_end, float a_moveDist)
+{
+	PointF destPt = a_start;
+	float dwNeedWalkDist = a_moveDist;
+	if (a_end.x == a_start.x)
+	{
+		if (a_end.y > a_start.y)
+		{
+			destPt.y += dwNeedWalkDist;
+		}
+		else
+		{
+			destPt.y -= dwNeedWalkDist;
+		}
+	}
+	else
+	{
+		dwNeedWalkDist = dwNeedWalkDist * dwNeedWalkDist;
+		float k = (float)(a_end.y - a_start.y) / (a_end.x - a_start.x);
+		k = abs(k);
+		float temp = 1 + k*k;
+		float ret = (float)dwNeedWalkDist / temp;
+		float x = sqrt(ret);
+		float y = x * k;
+		if (a_end.x > a_start.x)
+		{
+			destPt.x = (float)a_start.x + x;
+		}
+		else
+		{
+			destPt.x = (float)a_start.x - x;
+		}
+		if (a_end.y > a_start.y)
+		{
+			destPt.y = (float)a_start.y + y;
+		}
+		else
+		{
+			destPt.y = (float)a_start.y - y;
+		}
+	}
+	return destPt;
+}
+
+bool IsFilterItem(const CString& a_item, const std::vector<CString>& a_filters)
+{
+	for (auto& item : a_filters)
+	{
+		if (item == a_item)
+		{
+			return true;
+		}
 	}
 	return false;
 }

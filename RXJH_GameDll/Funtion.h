@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <vector>
 
 #define ENTITY_NOTSEL_ID		0xFFFF
 
@@ -44,3 +45,9 @@ struct PointF
 };
 
 bool IsNearPoint(PointF p1, PointF p2);
+float CalcPointDist(PointF pt1, PointF pt2);
+
+// 计算开始坐标往目的坐标移动指定距离后的目的坐标点
+PointF CalcMoveDestPt(const PointF& a_start, const PointF& a_end, float a_moveDist);
+
+bool IsFilterItem(const CString& a_item, const std::vector<CString>& a_filters);

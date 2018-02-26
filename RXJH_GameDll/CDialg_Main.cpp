@@ -12,6 +12,7 @@
 #include "BuyCountDlg.h"
 #include "EntityNPC.h"
 #include "MapManager.h"
+#include "Package.h"
 
 
 // CCDialg_Main 对话框
@@ -56,29 +57,6 @@ CCDialg_Main::~CCDialg_Main()
 void CCDialg_Main::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT4, m_nX);
-	DDX_Text(pDX, IDC_EDIT3, m_nY);
-	DDX_Control(pDX, IDC_BUTTON, m_btnWork);
-	//DDX_Text(pDX, IDC_EDIT8, m_szMapName);
-	DDX_Text(pDX, IDC_EDIT5, m_nAttackRange);
-	DDX_Text(pDX, IDC_EDIT6, m_nProtectHP);
-	DDX_Text(pDX, IDC_EDIT7, m_nProtectMP);
-	DDX_Check(pDX, IDC_CHECK1, m_bNearest);
-	DDX_Control(pDX, IDC_COMBO1, m_attackType);
-	DDX_Control(pDX, IDC_COMBO2, m_HPList);
-	DDX_Control(pDX, IDC_COMBO3, m_MPList);
-	DDX_Control(pDX, IDC_COMBO4, m_comboMap);
-	DDX_Control(pDX, IDC_COMBO5, m_comboSupply);
-	DDX_Check(pDX, IDC_CHECK5, m_bPackageFull);
-	DDX_Check(pDX, IDC_CHECK4, m_bArrows);
-	DDX_Check(pDX, IDC_CHECK3, m_bMPCounts);
-	DDX_Check(pDX, IDC_CHECK2, m_bHPCounts);
-	DDX_Text(pDX, IDC_EDIT8, m_nHPCounts);
-	DDX_Text(pDX, IDC_EDIT9, m_nMPCounts);
-	DDX_Text(pDX, IDC_EDIT10, m_nArrowCounts);
-	DDX_Control(pDX, IDC_COMBO6, m_comboBuyList);
-	DDX_Text(pDX, IDC_EDIT11, m_nBuyCount);
-	DDX_Control(pDX, IDC_LIST1, m_listBuys);
 }
 
 
@@ -192,12 +170,38 @@ void CCDialg_Main::OnBnClickedButton()
 	//UseTheF1_F10Call_(2);
 }
 
+void SetTabTitleAndFlag(PROPSHEETPAGE& prop, const char* title)
+{
+	prop.dwFlags |= PSP_USETITLE;
+	prop.pszTitle = title;
+}
+
 BOOL CCDialg_Main::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+	// 初始化标签页
+	m_sheet.AddPage(&m_pageSupply);
+	m_sheet.AddPage(&m_pageWork);
 	
+	SetTabTitleAndFlag(m_pageWork.m_psp, "挂机");
+	SetTabTitleAndFlag(m_pageSupply.m_psp, "回城买卖");
+	//用Create来创建一个属性页  
+	m_sheet.Create(this, WS_CHILD | WS_VISIBLE, WS_EX_CONTROLPARENT);
+	m_sheet.SetActivePage(&m_pageWork);
+	//调整m_sheet位置  
+	RECT rect;
+	GetClientRect(&rect);
+	rect.left -= 5;
+	rect.right += 2;
+	rect.top -= 5;
+	rect.bottom -= 70;
+	m_sheet.MoveWindow(&rect);
+	// 初始化配置
+	m_pageWork.LoadFromConfig(m_cfg);
+	m_pageSupply.LoadFromConfig(m_cfg);
+
 	// 初始控件数据
-	CString szShrotCut[10] = {" F1", " F2", " F3", " F4", " F5", " F6", " F7", " F8", " F9", " F10" };
+	/*CString szShrotCut[10] = {" F1", " F2", " F3", " F4", " F5", " F6", " F7", " F8", " F9", " F10" };
 	m_attackType.AddString("平砍");
 	for (int i = 0; i < 10; i++)
 	{
@@ -210,6 +214,7 @@ BOOL CCDialg_Main::OnInitDialog()
 		m_HPList.AddString(item);
 		m_comboBuyList.AddString(item);
 	}
+	m_HPList.AddString("九转丹");
 	m_HPList.SetCurSel(5);
 
 	for (auto& item : m_cfg.mpDrugs)
@@ -218,6 +223,11 @@ BOOL CCDialg_Main::OnInitDialog()
 		m_comboBuyList.AddString(item);
 	}
 	m_MPList.SetCurSel(3);
+
+	for (auto& item : m_cfg.buyGoods)
+	{
+		m_comboBuyList.AddString(item);
+	}
 	m_comboBuyList.SetCurSel(0);
 
 	const std::vector<MapInfo>& maps = MapManager::GetMgr().GetAllMaps();
@@ -227,7 +237,7 @@ BOOL CCDialg_Main::OnInitDialog()
 		m_comboSupply.AddString(item.szName);
 	}
 	m_comboMap.SetCurSel(0);
-	m_comboSupply.SetCurSel(0);
+	m_comboSupply.SetCurSel(0);*/
 
 	// 通知游戏线程，设置窗口已创建
 	NotifyMessage(RXJHMSG_INITIALIZE);
@@ -369,10 +379,11 @@ void CCDialg_Main::ProtectWork()
 	}
 }
 
-void CCDialg_Main::SetPoint(POINT a_pt)
+void CCDialg_Main::SetPointAndMap(POINT a_pt, const CString& a_map)
 {
 	m_cs.Lock();
 	m_cfg.pt = a_pt;
+	m_cfg.szWorkMap = a_map;
 
 	m_nX = a_pt.x;
 	m_nY = a_pt.y;
@@ -385,6 +396,8 @@ void CCDialg_Main::SetPoint(POINT a_pt)
 
 LRESULT CCDialg_Main::OnMsgRefreshUI(WPARAM a_wparam, LPARAM a_lparam)
 {
+	m_comboMap.SelectString(0, m_cfg.szWorkMap);
+
 	UpdateData(FALSE);
 
 	return 1;
@@ -415,7 +428,7 @@ void CCDialg_Main::OnApplyConfig()
 	m_cfg.bNearestPrior = m_bNearest;
 	// 保护设置
 	m_cfg.nProtectHP = m_nProtectHP;
-	m_cfg.nProtentMP = m_nProtectMP;
+	m_cfg.nProtectMP = m_nProtectMP;
 	m_HPList.GetWindowTextA(m_cfg.szPriorHPDrug);
 	m_MPList.GetWindowTextA(m_cfg.szPriorMPDrug);
 	// 回城设置
@@ -444,9 +457,11 @@ void CCDialg_Main::OnCbnDropdownHPList()
 	//m_HPList.AddString("test");
 }
 
-
 void CCDialg_Main::OnLoadConfig()
 {
+	Package pag;
+	pag.StoreAndSellGoods(m_cfg);
+	return;
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData();
 
@@ -456,7 +471,7 @@ void CCDialg_Main::OnLoadConfig()
 	npc.OpenTalk();
 	//::Sleep(2000);
 	npc.OpenShop();
-	npc.BuyGoodsByName(szGoods, m_nBuyCount);
+	//npc.BuyGoodsByName(szGoods, m_nBuyCount);
 	//::Sleep(2000);
 	npc.CloseShop();
 	//::Sleep(2000);

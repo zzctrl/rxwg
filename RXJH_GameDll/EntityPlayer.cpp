@@ -92,6 +92,7 @@ void EntityRole::SetDepotNPC(const EntityNPC& a_npc)
 {
 	m_npc = a_npc;
 	m_npcOper = Oper_Store;
+	m_npcOperStatus = BS_OpenTalk;
 	m_nextOperationTime = ::GetTickCount();
 }
 bool EntityRole::StoreGoods()
@@ -103,6 +104,7 @@ void EntityRole::SetBuyNPC(const EntityNPC& a_npc)
 {
 	m_npc = a_npc;
 	m_npcOper = Oper_BuySell;
+	m_npcOperStatus = BS_OpenTalk;
 	m_nextOperationTime = ::GetTickCount();
 }
 
@@ -111,9 +113,27 @@ bool EntityRole::BuySellGoods()
 	return DoNpcOperation(Oper_BuySell);
 }
 
-bool EntityRole::DoNpcOperation(NPCOperType a_operType)
+void EntityRole::SetTransferNPC(const EntityNPC& a_npc)
+{
+	m_npc = a_npc;
+	m_npcOper = Oper_Transfer;
+	m_npcOperStatus = BS_OpenTalk;
+	m_nextOperationTime = ::GetTickCount();
+}
+bool EntityRole::TransferToMap(DWORD a_transIndex)
+{
+	return DoNpcOperation(Oper_Transfer, a_transIndex);
+}
+
+bool EntityRole::DoNpcOperation(NPCOperType a_operType, DWORD a_optionIndex)
 {
 	bool bFinished = false;
+	DWORD dwCurTime = ::GetTickCount();
+	if (dwCurTime < m_nextOperationTime)
+	{
+		return bFinished;
+	}
+
 	static DWORD s_waitTime = 2000;
 	switch (m_npcOperStatus)
 	{
@@ -122,81 +142,67 @@ bool EntityRole::DoNpcOperation(NPCOperType a_operType)
 		m_npc.OpenTalk();
 		m_npcOperStatus = BS_SelOption;
 		// 延迟2s再进行打开商店操作
-		m_nextOperationTime = ::GetTickCount() + s_waitTime;
+		m_nextOperationTime = dwCurTime + s_waitTime;
 	}
 	break;
 	case EntityRole::BS_SelOption:
 	{
-		DWORD dwCurTime = ::GetTickCount();
-		if (dwCurTime > m_nextOperationTime)
-		{
-			m_npc.OpenShop();
-			m_npcOperStatus = BS_Operation;
-			m_nextOperationTime = dwCurTime + s_waitTime;
-		}
+		//m_npc.OpenShop();
+		m_npc.ChooseOption(a_optionIndex);
+		m_npcOperStatus = Oper_Transfer == a_operType ? BS_Finished : BS_Operation;
+		m_nextOperationTime = dwCurTime + s_waitTime;
 	}
 	break;
 	case EntityRole::BS_Operation:
 	{
-		DWORD dwCurTime = ::GetTickCount();
-		if (dwCurTime > m_nextOperationTime)
+		if (Oper_Store == a_operType)
 		{
-			// 买卖物品
-			if (Oper_BuySell == a_operType)
-			{
-				for (auto item : m_config.buys)
-				{
-					m_npc.BuyGoodsByName(item.first, item.second);
-					::Sleep(50);
-				}
-			}
-			m_npcOperStatus = BS_CloseOption;
-			//m_nextOperationTime = dwCurTime + 2000;
+			m_package.StoreAndSellGoods(m_config);
 		}
+		// 买卖物品
+		else if (Oper_BuySell == a_operType)
+		{
+			// 购买清单列表的物品
+			for (auto item : m_config.buys)
+			{
+				m_package.BuyGoodsByName(item.first, item.second);
+				::Sleep(10);
+			}
+		}
+		m_npcOperStatus = BS_CloseOption;
+		//m_nextOperationTime = dwCurTime + 2000;
 	}
 	break;
 	case EntityRole::BS_CloseOption:
 	{
-		DWORD dwCurTime = ::GetTickCount();
-		if (dwCurTime > m_nextOperationTime)
+		if (Oper_Store == a_operType)
 		{
-			if (Oper_Store == a_operType)
-			{
-				m_npc.CloseDepot();
-				m_npcOperStatus = BS_Finished;
-			}
-			else
-			{
-				m_npc.CloseShop();
-				m_npcOperStatus = BS_CloseTalk;
-			}
-			
-			m_nextOperationTime = dwCurTime + s_waitTime;
+			m_npc.CloseDepot();
+			m_npcOperStatus = BS_Finished;
 		}
+		else
+		{
+			m_npc.CloseShop();
+			m_npcOperStatus = BS_CloseTalk;
+		}
+
+		m_nextOperationTime = dwCurTime + s_waitTime;
 	}
 	break;
 	case EntityRole::BS_CloseTalk:
 	{
-		DWORD dwCurTime = ::GetTickCount();
-		if (dwCurTime > m_nextOperationTime)
-		{
-			m_npc.CloseTalk();
-			m_npcOperStatus = BS_Finished;
-			m_nextOperationTime = dwCurTime + s_waitTime;
-		}
+		m_npc.CloseTalk();
+		m_npcOperStatus = BS_Finished;
+		m_nextOperationTime = dwCurTime + s_waitTime;
 	}
 	break;
 	case EntityRole::BS_Finished:
 	{
-		DWORD dwCurTime = ::GetTickCount();
-		if (dwCurTime > m_nextOperationTime)
-		{
-			// 重新设置初始状态，并设置完成标记
-			m_npc.SetID(EntityBase::ID_NULL);
-			m_npcOperStatus = BS_OpenTalk;
-			m_nextOperationTime = 0;
-			bFinished = true;
-		}
+		// 重新设置初始状态，并设置完成标记
+		m_npc.SetID(EntityBase::ID_NULL);
+		m_npcOperStatus = BS_OpenTalk;
+		m_nextOperationTime = 0;
+		bFinished = true;
 	}
 	break;
 	default:
@@ -226,6 +232,8 @@ bool EntityRole::CheckWalkStatus()
 // 寻路到指定坐标
 void EntityRole::WalkTo(PointF a_pt)
 {
+	// todo: 需要加入防卡处理，如果移动后跟前一个坐标点m_prePt一样，则可以x,y随机加上一个较小的值进行移动
+
 	m_bWalking = true;
 	m_destPt = a_pt;
 
@@ -297,8 +305,89 @@ void EntityRole::UseShortcutF1_F10(ShortCut a_index)
 	}
 }
 
+static const DWORD s_dwShortcutBaseAddress = 0x02D11D40;
+static const DWORD s_dwShortcutOffset = 0x410;
+#define TYPE_SKILL		2
+#define SKILL_ATTACK	4			
+#define SKILL_FZ		5	
+// 使用必杀技
+void EntityRole::UseKillSkill()
+{
+	DWORD dwBase = Read_RD(s_dwShortcutBaseAddress);
+	for (int i = 0; i < 20; i++)
+	{
+		DWORD dwNation = Read_RD(dwBase + i * 4 + s_dwShortcutOffset);
+		if (0 != dwNation)
+		{
+			DWORD dwShortcutType = Read_RD(dwNation + 0x48);
+			if (TYPE_SKILL == dwShortcutType)
+			{
+				DWORD dwSkillType = Read_RD(dwNation + 0x230);
+				if (SKILL_ATTACK == dwSkillType)
+				{
+					// 获得技能描述
+					char * pDescribe = Read_RS(dwNation + 0xF1);
+					if (pDescribe)
+					{
+						CString szDescribe = pDescribe;
+						if (szDescribe.Find("绝命技") > 0)
+						{
+							ShortCut shortCut = static_cast<ShortCut>(i);
+							UseShortcutF1_F10(shortCut);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+// 使用辅助武功
+void EntityRole::UseFZSkill()
+{
+	DWORD dwBase = Read_RD(s_dwShortcutBaseAddress);
+	for (int i = 0; i < 20; i++)
+	{
+		DWORD dwNation = Read_RD(dwBase + i * 4 + s_dwShortcutOffset);
+		if (0 != dwNation)
+		{
+			DWORD dwShortcutType = Read_RD(dwNation + 0x48);
+			if (TYPE_SKILL == dwShortcutType)
+			{
+				DWORD dwSkillType = Read_RD(dwNation + 0x230);
+				if (SKILL_FZ == dwSkillType)
+				{
+					// 不是轻功
+					CString szSkillName = Read_RS(dwNation + 0x5C);
+					if (szSkillName != "疾风御气术" && szSkillName != "梯云纵" && szSkillName != "草上飞")
+					{
+						ShortCut shortCut = static_cast<ShortCut>(i);
+						UseShortcutF1_F10(shortCut);
+					}
+				}
+			}
+		}
+	}
+}
+
 // 使用技能
 void EntityRole::UseSkill(const CString& a_skillName)
 {
-
+	DWORD dwBase = Read_RD(s_dwShortcutBaseAddress);
+	for (int i = 0; i < 20; i++)
+	{
+		DWORD dwNation = Read_RD(dwBase + i * 4 + s_dwShortcutOffset);
+		if (0 != dwNation)
+		{
+			DWORD dwShortcutType = Read_RD(dwNation + 0x48);
+			if (TYPE_SKILL == dwShortcutType)
+			{
+				CString szSkillName = Read_RS(dwNation + 0x5C);
+				if (a_skillName == szSkillName)
+				{
+					ShortCut shortCut = static_cast<ShortCut>(i);
+					UseShortcutF1_F10(shortCut);
+				}
+			}
+		}
+	}
 }

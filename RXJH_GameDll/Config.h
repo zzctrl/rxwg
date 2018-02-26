@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 #include <map>
 #include <vector>
 
@@ -18,7 +19,7 @@ public:
 
 	// 保护设置
 	int nProtectHP;
-	int nProtentMP;
+	int nProtectMP;
 	CString szPriorHPDrug;
 	CString szPriorMPDrug;
 
@@ -29,6 +30,9 @@ public:
 	int nAttackRange;
 	BOOL bNearestPrior;
 	BOOL bPickUp;
+	int nFilterDist; // 过滤近怪的距离
+	BOOL bFilterMonster;
+	BOOL bFixedPos;
 
 	// 回城设置
 	BOOL bCheckHPDrugs;
@@ -43,8 +47,13 @@ public:
 	// 买卖设置: 物品名称，数量
 	std::map<CString, DWORD> buys;
 
-
 	std::vector<CString> hpDrugs;
 	std::vector<CString> mpDrugs;
+	std::vector<CString> armArrows;
+	std::vector<CString> hcfs;
+
+	std::vector<CString> buyGoods;
+	// 捡物过滤
+	std::vector<CString> pickFilters;
 };
 

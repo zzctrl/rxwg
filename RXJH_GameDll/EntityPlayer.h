@@ -28,7 +28,8 @@ public:
 
 	// F1-F10索引
 	enum ShortCut {
-		SC_F1 = 0, FC_F2, FC_F3, FC_F4, FC_F5, SC_F6, FC_F7, FC_F8, FC_F9, FC_F10
+		SC_F1 = 0, FC_F2, FC_F3, FC_F4, FC_F5, SC_F6, FC_F7, FC_F8, FC_F9, FC_F10, \
+		SC_1 = 0, FC_2, FC_3, FC_4, FC_5, SC_6, FC_7, FC_8, FC_9, FC_10
 	};
 public:
 	EntityRole(Config& a_config, DWORD a_id = ID_NULL);
@@ -52,6 +53,9 @@ public:
 	// 买卖物品，买卖完成后才返回true
 	void SetBuyNPC(const EntityNPC& a_npc);
 	bool BuySellGoods();
+	// 传送
+	void SetTransferNPC(const EntityNPC& a_npc);
+	bool TransferToMap(DWORD a_transIndex);
 
 	// 使用物品
 	void UseGoods(const CString& a_goodsName);
@@ -66,6 +70,10 @@ public:
 
 	// 使用快捷键F1-F10
 	void UseShortcutF1_F10(ShortCut a_index);
+	// 使用必杀技
+	void UseKillSkill();
+	// 使用辅助武功
+	void UseFZSkill();
 
 	// 使用技能
 	void UseSkill(const CString& a_skillName);
@@ -73,12 +81,12 @@ public:
 	Package& GetPackage();
 
 private:
-	// NPC操作：存取物品，买卖物品
-	enum NPCOperType{ Oper_Store, Oper_BuySell };
+	// NPC操作：存取物品，买卖物品，传送
+	enum NPCOperType{ Oper_Store, Oper_BuySell, Oper_Transfer };
 	// NPC操作状态
 	enum NPCOperStatus{BS_OpenTalk= 0, BS_SelOption, BS_Operation, BS_CloseOption, BS_CloseTalk, BS_Finished};
 
-	bool DoNpcOperation(NPCOperType a_operType);
+	bool DoNpcOperation(NPCOperType a_operType, DWORD a_optionIndex = 0);
 private:
 	Config& m_config;
 
@@ -87,6 +95,8 @@ private:
 	// 寻路状态和目的坐标
 	bool m_bWalking;
 	PointF m_destPt;
+	// 移动前一个坐标点
+	PointF m_prePt;
 
 	// 当前要对话的NPC
 	EntityNPC m_npc;
