@@ -1,0 +1,52 @@
+[PC Hunter Standard][Client.exe-->Ring3 Hook]: 50
+挂钩对象		挂钩位置		钩子类型		挂钩处当前值		挂钩处原始值
+[*]len(1) Client.exe		0x000000000040CF21->_		inline		EB		7A
+[*]len(2) Client.exe		0x000000000041BA79->_		inline		90 90		75 46
+[*]len(6) Client.exe		0x000000000041BD1F->_		inline		90 90 90 90 90 90		0F 85 D9 01 00 00
+[*]len(7) Client.exe		0x000000000046526A->_		inline		E8 E1 63 F6 6B 90 90		C7 45 FC 02 00 00 00
+[*]len(5) Client.exe		0x00000000004DF8D5->_		inline		E8 86 2D F1 6B		B9 F8 BE 09 01
+[*]len(5) Client.exe		0x00000000004E0223->_		inline		E8 6E 09 EE 6B		B8 B0 20 00 00
+[*]len(6) Client.exe		0x00000000004E032B->_		inline		E9 E6 00 00 00 90		0F 85 E5 00 00 00
+[*]len(2) Client.exe		0x00000000004ED6FF->_		inline		90 90		74 39
+[*]len(6) Client.exe		0x00000000004F5384->_		inline		E9 25 05 00 00 90		0F 85 24 05 00 00
+[*]len(1) Client.exe		0x000000000050613B->_		inline		EB		75
+[*]len(14) Client.exe		0x000000000050650A->_		inline		00 C7 45 0C 5A 00 00 00 E8 29 A6 EB 6B 90		07 C7 45 0C 05 00 00 00 D9 45 08 DB 45 0C
+[*]len(1) Client.exe		0x000000000050E92A->_		inline		EB		7E
+[*]len(2) Client.exe		0x000000000050F239->_		inline		EB 1A		6A 02
+[*]len(6) Client.exe		0x000000000051F3AD->_		inline		90 90 90 90 90 90		0F 85 69 01 00 00
+[*]len(4) Client.exe		0x000000000051FDCC->_		inline		E9 05 08 00		0F 85 04 08
+[*]len(2) Client.exe		0x0000000000520806->_		inline		90 90		75 14
+[*]len(2) Client.exe		0x000000000052088B->_		inline		90 90		75 69
+len(6) Client.exe		0x0000000000528988->_		inline		90 90 90 90 90 90		0F 84 B8 44 00 00
+[*]len(6) Client.exe		0x00000000005289DB->_		inline		90 90 90 90 90 90		0F 84 65 44 00 00
+len(1) Client.exe		0x000000000052ACC0->_		inline		EB		74
+[*]len(6) Client.exe		0x000000000052B6E6->_		inline		E8 C5 FF E9 6B 90		D9 87 0C 1C 00 00
+[*]len(6) Client.exe		0x000000000052B88C->_		inline		90 90 90 90 90 90		0F 84 A8 00 00 00
+[*]len(1) Client.exe		0x000000000053A986->_		inline		EB		75
+len(5) Client.exe		0x000000000058F8C0->_		inline		E9 AB BD E3 6B		55 8B EC 6A FF
+[*]len(6) Client.exe		0x00000000005B5D87->_		inline		E9 DE 00 00 00 90		0F 84 DD 00 00 00
+[*]len(11) Client.exe		0x00000000006BFB57->_		inline		E8 04 10 D0 6B 90 90 90 90 90 90		C7 84 B8 10 04 00 00 00 00 00 00
+[*]len(1) Client.exe		0x00000000006C0414->_		inline		EB		74
+[*]len(6) Client.exe		0x00000000006CDFC1->_		inline		E8 BA 0B 49 69 90		66 89 45 C8 33 C0
+len(5) Client.exe		0x00000000006CFFE0->_		inline		E8 3B EF 48 69		80 3B 00 8B F8
+[*]len(2) Client.exe		0x00000000006E1A49->_		inline		EB 61		0F 85
+[*]len(1) Client.exe		0x00000000006E1C63->_		inline		EB		75
+[*]len(6) Client.exe		0x00000000006E9B84->_		inline		90 90 90 90 90 90		0F 84 6A FB FF FF
+[*]len(2) Client.exe		0x00000000006E9C1A->_		inline		EB 29		8B 0D
+[*]len(1) Client.exe		0x00000000007A335D->_		inline		EB		74
+[*]len(6) Client.exe		0x00000000007C9CAC->_		inline		90 90 90 90 90 90		0F 84 79 01 00 00
+len(5) Client.exe		0x0000000000819680->_		inline		E9 7B 1F BB 6B		55 8B EC 6A FF
+[*]len(6) Client.exe		0x000000000085516F->_		inline		90 90 90 90 90 90		0F 8A 81 00 00 00
+[*]len(6) Client.exe		0x000000000085F7B3->_		inline		E8 F8 13 B6 6B 90		8D 8D CC FA FF FF
+[*]len(5) Client.exe		0x0000000000861F3A->_		inline		E8 71 F8 B8 6B		B9 10 02 D4 02
+[*]len(6) Client.exe		0x0000000000862253->_		inline		E8 C8 B6 B7 6B 90		89 86 CC 03 00 00
+[*]len(6) Client.exe		0x000000000086326C->_		inline		E8 BF 83 B6 6B 90		53 53 6A 02 FF D0
+len(6) Client.exe		0x00000000008637E0->_		inline		E8 4B 7E B6 6B 90		53 53 6A 02 FF D0
+[*]len(7) ntdll.dll->KiUserCallbackDispatcher		0x0000000077E000EC->_		inline		E9 4F AD 6C ED CC CC		64 8B 0D 00 00 00 00
+[*]len(5) ntdll.dll->LdrAccessResource		0x0000000077E2C75E->_		inline		E9 CD D1 E5 F1		FF 74 24 10 FF
+[*]len(5) ntdll.dll->LdrFindResource_U		0x0000000077E2C77B->_		inline		E9 20 D1 E5 F1		8B FF 55 8B EC
+[*]len(5) KERNELBASE.dll->LoadStringA		0x0000000075DF4CB5->_		inline		E9 F6 4A E9 F3		8B FF 55 8B EC
+[*]len(5) KERNELBASE.dll->LoadStringW		0x0000000075DF4D22->_		inline		E9 19 4B E9 F3		8B FF 55 8B EC
+[*]len(5) USER32.dll->FindWindowA		0x0000000076B7FFE6->_		inline		E9 55 FA FD F2		8B FF 55 8B EC
+[*]len(1) yb_mem.dll		0x000000000E973786->_		inline		28		26
+[*]len(2) yb_mem.dll		0x000000000E97AACF->_		inline		90 90		75 08
